@@ -1,4 +1,6 @@
-Flask
+flask
 Flask-SQLAlchemy
 flask_login
+requests
+python-dotenv
 psycopg2
