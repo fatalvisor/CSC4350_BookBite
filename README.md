@@ -1,6 +1,6 @@
 # Getting Started with Create React App
 
-The URL for the Heroku app is: https://aqueous-castle-25369.herokuapp.com/
+The URL for the Heroku app is: https://aqueous-castle-25369.herokuapp.com/ \
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
