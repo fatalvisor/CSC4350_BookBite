@@ -10,10 +10,16 @@ bp = flask.Blueprint(
     template_folder="./static/react",
 )
 
+
+
+
 # Route for serving React page
 @bp.route("/")
 def index():
     return flask.render_template("index.html")
+
+
+
 
 
 app.register_blueprint(bp)
