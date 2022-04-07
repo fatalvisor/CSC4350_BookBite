@@ -4,12 +4,7 @@ from penguin import book_search
 from models import SignupForm, LoginForm, Users, Favorites
 
 app = flask.Flask(__name__)
-
-bp = flask.Blueprint(
-    "bp",
-    __name__,
-    template_folder="./static/react",
-)
+bp = flask.Blueprint("bp", __name__, template_folder="./static/react",)
 
 @app.route('/login', methods=["GET","POST"])
 def login():
@@ -112,8 +107,8 @@ def handle_theme_suggestions():
 
 
 # Route for serving React page
-@bp.route("/")
-def index():
+@bp.route("/getbook")
+def getbook():
     return flask.render_template("index.html")
 
 
