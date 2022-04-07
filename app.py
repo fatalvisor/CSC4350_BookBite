@@ -4,12 +4,7 @@ import os
 from penguin import book_search
 
 app = flask.Flask(__name__)
-
-bp = flask.Blueprint(
-    "bp",
-    __name__,
-    template_folder="./static/react",
-)
+bp = flask.Blueprint("bp", __name__, template_folder="./static/react",)
 
 
 @app.route("/handle_theme_suggestions")
@@ -26,8 +21,8 @@ def handle_theme_suggestions():
 
 
 # Route for serving React page
-@bp.route("/")
-def index():
+@bp.route("/getbook")
+def getbook():
     return flask.render_template("index.html")
 
 
