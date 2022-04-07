@@ -80,4 +80,4 @@ class Favorites(db.Model):
     bookISBN = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return "<Review %r>" % self.bookISBN
+        return "<Review %r>" % self.
