@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LOGIN</title>
+</head>
+<h1>LOGIN</h1>
+<body>
+    <form action="" method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.email }} <br> <br>
+        {{ form.password }} <br> <br>
+        {{ form.submit }}
+
+
+
+    </form>
+       <br> 
+            <label>Don't have an account?</label>
+            <a href="{{url_for('signup')}}">Sign Up!</a>
+        </form>
+        
+        
+</body>
+</html>
