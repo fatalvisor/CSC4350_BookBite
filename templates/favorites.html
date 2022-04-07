@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/static/favorites.css" />
+</head>
+
+
+
+<body>
+
+    <h1>Your Favorites:</h1>
+    <div class='main-grid'>
+        {% for i in favorites %}
+        <div>
+            <img src={{i[0]}} alt="Book Poster" class="center">
+            <div>
+                <br>
+                <div class='data-grid'>
+                    <div>
+                        Author: {{i[1]}}
+                    </div>
+                    <div>
+                        Title: {{i[2]}}
+                    </div>
+                    <div>
+                        Pg count: {{i[3]}}
+                    </div>
+                    <div>
+                        Theme: {{i[4]}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+
+</body>
+
+</html>
+<!---->

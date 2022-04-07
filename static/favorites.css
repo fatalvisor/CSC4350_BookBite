@@ -1,0 +1,31 @@
+body {
+    background-color: #76CDD7;
+}
+
+h1 {
+    text-align: center;
+}
+
+
+.center {
+    display: block;
+    margin-left: 90px;
+    margin-right: auto;
+    /*this is used to center the pictures, I think I may have to change the width thing tho 
+    because I think that is based upon original image width and will change from book to book. */
+    width: 50%;
+}
+
+
+.main-grid {
+    display: grid;
+    grid-gap: 50px;
+    grid-template-columns: 33% 33% 33%;
+}
+
+.data-grid {
+    display: grid;
+    padding-left: 65px;
+    grid-gap: 5px;
+    grid-template-columns: 40% 40%;
+}
