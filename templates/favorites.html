@@ -17,30 +17,20 @@
             <input type="submit" value="Submit">
         </form>
     </div>
-    <div class='main-grid'>
-        {% for i in favorites %}
-        <div>
-            <img src={{i[0]}} alt="Book Poster" class="center">
-            <div>
-                <br>
-                <div class='data-grid'>
-                    <div>
-                        Author: {{i[1]}}
-                    </div>
-                    <div>
-                        Title: {{i[2]}}
-                    </div>
-                    <div>
-                        Pg count: {{i[3]}}
-                    </div>
-                    <div>
-                        Theme: {{i[4]}}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    {% if num_books is defined %}
+    {% for index in range(num_books) %}
+    <div>
+        <img src="{{book_urls[index]}}" />
+        <p><b>Title: {{book_titles[index]}}</b></p>
+        <form action="/get_book_info" method="POST">
+            {{ suggestion_form.csrf_token }}
+            ISBN:
+            {{ suggestion_form.isbn(value=book_ISBNs[index]) }}
+            {{ suggestion_form.submit }}
+        </form>
     </div>
+    {% endfor %}
+    {% endif %}
 
 </body>
 
