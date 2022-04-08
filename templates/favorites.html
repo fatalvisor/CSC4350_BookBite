@@ -6,7 +6,17 @@
 </head>
 
 <body>
-    <h1>Your Favorites:</h1>
+    <form method="POST" action="/homepage">
+        <input type="submit" value="Return Home.">
+    </form>
+    <div class=center-text>
+        <h1>Your Favorites:</h1>
+        <p>Type an ISBN number below to remove any favorites!</p>
+        <form method="POST" action="/delete_favorite">
+            <input type="text" name="isbn" style="width: 500px" placeholder="isbn">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
     <div class='main-grid'>
         {% for i in favorites %}
         <div>
