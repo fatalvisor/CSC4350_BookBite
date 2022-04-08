@@ -73,7 +73,39 @@ class BookThemeForm(FlaskForm):
     """Establishes the basic fields required for a form used to select a theme out of a list of options."""
 
     # Note: Theme options must be added here For simplicity sake, dummyValue = dummyName.
-    theme = SelectField("theme", choices=[("dummyValue", "dummyName")])
+    theme = SelectField(
+        "theme",
+        choices=[
+            ("Adventure", "Adventure"),
+            ("Humor", "Humor"),
+            ("Horror", "Horror"),
+            ("Fantasy", "Fantasy"),
+            ("Supernatural", "Supernatural"),
+            ("Media", "Media"),
+            ("Good vs. Evil", "Good vs. Evil"),
+            ("Determination", "Determination"),
+            ("Friendship", "Friendship"),
+            ("Science Fiction", "Science Fiction"),
+            ("Historical Fiction", "Historical Fiction"),
+            ("Animals", "Animals"),
+            ("Halloween", "Halloween"),
+            ("Classics", "Classics"),
+            ("Survival", "Survival"),
+            ("Coming of Age", "Coming of Age"),
+            ("Fairness, Justice, & Equality", "Fairness, Justice, & Equality"),
+            ("War", "War"),
+            ("Love & Romance", "Love & Romance"),
+            ("Patriotism", "Patriotism"),
+            ("Mystery & Suspense", "Mystery & Suspense"),
+            ("Betrayal", "Betrayal"),
+            ("Myths, Legends & Folklore", "Myths, Legends & Folklore"),
+            ("Geography", "Geography"),
+            ("Self-Discovery", "Self-Discovery"),
+            ("Science & Nature", "Science & Nature"),
+            ("Fairytales & Fables", "Fairytales & Fables"),
+            ("Family & Relationships", "Family & Relationships"),
+        ],
+    )
     submit = SubmitField("Submit")
 
 
