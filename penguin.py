@@ -20,7 +20,7 @@ def get_themes(themes):
     return "None"
 
 
-def book_search(theme):
+def book_suggestions(theme):
     """Finds and returns the titles and cover image URLs of randomly selected books falling under a certain theme."""
     try:
         # "start", "max", and "expandlevel" are required parameters.
@@ -65,32 +65,32 @@ def book_search(theme):
 
 
 def book_info(isbn):
-    """Get all the information about the book using the ISBN number"""
+    """Get all the information about the book using the provided ISBN number."""
     isbn = str(isbn)
     try:
         BASE_URL = "https://reststop.randomhouse.com/resources/titles/"
         url = BASE_URL + isbn
         response = requests.get(url, headers={"Accept": "application/json"})
         response_json = response.json()
-        # Get author name
+
+        # The name of the author is found below.
         name = response_json["author"]
         author = " ".join(reversed(name.split(",")))
-        # Get Flap Copy which is like a summary for the book
+
+        # flapcopy is the summary for the book. HTML tags are removed from this attribute.
         flapcopy_html = response_json["flapcopy"]
         flapcopy = tag_remove(flapcopy_html)
-        # Get author bio
+
+        # Provides brief info about the author. HTML tags are removed from this attribute.
         author_bio_html = response_json["authorbio"]
         author_bio = tag_remove(author_bio_html)
-        # Get ISBN number
+
+        # Grabs various other useful pieces of information about the book.
         book_isbn = response_json["isbn"]
-        # Get page number
         page_num = response_json["pages"]
-        # Get the theme
         themes = response_json["themes"]
         book_theme = get_themes(themes)
-        # Get book cover
         book_cover = response_json["@uri"]
-        # Get book title
         book_title = response_json["titleweb"]
         return (
             author,
@@ -103,4 +103,5 @@ def book_info(isbn):
             book_title,
         )
     except:
-        return "Nothing"  # This is just place holder
+        # This is just a place holder value for now until proper dummy return values are added later.
+        return "Nothing"
