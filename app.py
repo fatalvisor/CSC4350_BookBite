@@ -1,4 +1,5 @@
 # Note: Be sure to install bcrypt, flask-bcrypt, and flask_wtf (if you haven't already) onto your system.
+from crypt import methods
 import os
 import flask
 import bcrypt
@@ -185,14 +186,17 @@ def favorites():
     all_favorite_isbns = Favorites.query.filter_by(userEmail=current_user.email).all()
     book_titles, book_urls = basic_book_info(all_favorite_isbns)
     num_books = len(all_favorite_isbns)
-    return flask.render_template(
-        "favorites.html",
-        suggestion_form=suggestion_form,
-        book_titles=book_titles,
-        book_urls=book_urls,
-        book_ISBNs=all_favorite_isbns,
-        num_books=num_books,
-    )
+    if num_books == 0:
+        return flask.render_template("no_favorites.html")
+    else:
+        return flask.render_template(
+            "favorites.html",
+            suggestion_form=suggestion_form,
+            book_titles=book_titles,
+            book_urls=book_urls,
+            book_ISBNs=all_favorite_isbns,
+            num_books=num_books,
+        )
 
 
 # Need current user to store current user, so need to talk to maryam about user login
@@ -200,15 +204,15 @@ def favorites():
 @app.route("/add_favorite", method=["GET", "POST"])
 def add_favorite():
     isbn = flask.request.form.get("isbn")
-    new_favorite = Favorites(username=current_user, bookISBN=isbn)
+    new_favorite = Favorites(userEmail=current_user.email, bookISBN=isbn)
     db.session.add(new_favorite)
     db.session.commit()
 
 
-@app.route("/delete_favorite", method=["GET", "POST"])
+@app.route("/delete_favorite", methods=["GET", "POST"])
 def delete_favorite():
     isbn = flask.request.form.get("isbn")
-    delete_book = Favorites.query.filter_by(isbn=isbn, username=current_user)
+    delete_book = Favorites.query.filter_by(isbn=isbn, userEmail=current_user.email)
     db.session.delete(delete_book)
     db.session.commit()
     return flask.redirect(flask.url_for("get_favorites"))
