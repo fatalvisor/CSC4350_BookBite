@@ -37,11 +37,7 @@ bcrypt = Bcrypt(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-bp = flask.Blueprint(
-    "bp",
-    __name__,
-    template_folder="./static/react",
-)
+bp = flask.Blueprint("bp", __name__, template_folder="./static/react",)
 
 db.init_app(app)
 with app.app_context():
@@ -211,7 +207,7 @@ def get_book_info():
         book_cover,
         book_title,
     ) = all_book_info(book_isbn)
-
+    
     return flask.render_template(
         "bookpage.html",
         author=author,
