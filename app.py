@@ -28,11 +28,7 @@ bcrypt = Bcrypt(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-bp = flask.Blueprint(
-    "bp",
-    __name__,
-    template_folder="./static/react",
-)
+bp = flask.Blueprint("bp", __name__, template_folder="./static/react",)
 
 db.init_app(app)
 with app.app_context():
@@ -52,6 +48,9 @@ def signup():
     """Returns the basic sign-up page where login information can be inputted to the database."""
     form = SignupForm()
     return flask.render_template("signup.html", form=form)
+
+    return render_template("login.html", form=form)
+    # no login.html page as of now
 
 
 @app.route("/signup_post", methods=["POST"])
@@ -119,6 +118,34 @@ def handle_theme_suggestions():
         book_urls=book_urls,
         book_ISBNs=book_ISBNs,
         num_books=num_books,
+    )
+
+
+@app.route("/get_book_info")
+def get_book_info():
+    """Generate book info based on the isbn"""
+    data = flask.request.form
+    isbn = data["isbn"]
+    (
+        author,
+        flapcopy,
+        author_bio,
+        book_isbn,
+        page_num,
+        book_theme,
+        book_cover,
+        book_title,
+    ) = book_info(isbn)
+    return flask.render_template(
+        "bookpage.html",
+        author=author,
+        flapcopy=flapcopy,
+        author_bio=author_bio,
+        book_isbn=book_isbn,
+        page_num=page_num,
+        book_theme=book_theme,
+        book_cover=book_cover,
+        book_title=book_title,
     )
 
 
