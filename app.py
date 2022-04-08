@@ -2,6 +2,7 @@
 import os
 import flask
 import bcrypt
+from dotenv import find_dotenv, load_dotenv
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
 from flask_login import (
@@ -11,9 +12,17 @@ from flask_login import (
     logout_user,
     current_user,
 )
-from dotenv import find_dotenv, load_dotenv
-from penguin import book_suggestions, book_info
-from models import db, SignupForm, LoginForm, Users, Favorites
+from models import (
+    db,
+    SignupForm,
+    LoginForm,
+    SuggestionInfoForm,
+    BookThemeForm,
+    BookTitleForm,
+    Users,
+    Favorites,
+)
+from penguin import book_suggestions, title_search, all_book_info, basic_book_info
 
 app = flask.Flask(__name__)
 load_dotenv(find_dotenv())
@@ -48,9 +57,6 @@ def signup():
     """Returns the basic sign-up page where login information can be inputted to the database."""
     form = SignupForm()
     return flask.render_template("signup.html", form=form)
-
-    return render_template("login.html", form=form)
-    # no login.html page as of now
 
 
 @app.route("/signup_post", methods=["POST"])
@@ -89,9 +95,7 @@ def login_post():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                # Currently, the login page is set to redirect you to the favorites page. Currently, there is no homepage to render.
-                # Be sure to update this.
-                return flask.render_template("favorites.html")
+                return flask.render_template("homepage.html")
 
     return flask.redirect(flask.url_for("login"))
 
@@ -104,28 +108,95 @@ def logout():
     return flask.redirect(flask.url_for("login"))
 
 
-@app.route("/handle_theme_suggestions")
-def handle_theme_suggestions():
-    """Based on the theme selected, the title and cover image of a random book under said theme is returned and rendered in a webpage."""
-    data = flask.request.form
-    book_titles, book_urls, book_ISBNs = book_suggestions(data["theme"])
-    num_books = len(book_titles)
+@app.route("/homepage", methods=["GET"])
+@login_required
+def homepage():
+    """Renders the basic landing page from which most other HTML pages can be reached."""
+    return flask.render_template("homepage.html")
+
+
+@app.route("/suggestions")
+@login_required
+def suggestions():
+    """Returns the basic suggestions page where books can be suggested to the user based on a chosen theme."""
+    theme_form = BookThemeForm()
+    suggestion_form = SuggestionInfoForm()
     return flask.render_template(
-        # There is no book_theme_suggestions webpage currently (4/07). This is just a placeholder for now.
-        # Be sure to replace test.html with that page.
-        "test.html",
+        "suggestions.html", theme_form=theme_form, suggestion_form=suggestion_form
+    )
+
+
+@app.route("/handle_theme_suggestions")
+@login_required
+def handle_theme_suggestions():
+    """Based on the theme selected, the titles, ISBNs, and cover images of a random set of books under said theme is returned and re-rendered on the suggestions page."""
+    theme_form = BookThemeForm()
+    suggestion_form = SuggestionInfoForm()
+    if theme_form.validate_on_submit():
+        book_titles, book_urls, book_ISBNs = book_suggestions(theme_form.theme.data)
+        num_books = len(book_titles)
+        return flask.render_template(
+            "suggestions.html",
+            theme_form=theme_form,
+            suggestion_form=suggestion_form,
+            book_titles=book_titles,
+            book_urls=book_urls,
+            book_ISBNs=book_ISBNs,
+            num_books=num_books,
+        )
+
+
+@app.route("/search_by_title")
+@login_required
+def search_by_title():
+    """Returns the basic search_by_title page where books can be searched directly for using a title input."""
+    title_form = BookTitleForm()
+    return flask.render_template("search_by_title.html", title_form=title_form)
+
+
+@app.route("/handle_title_selection")
+@login_required
+def handle_title_selection():
+    """Returns the basic search_by_title page."""
+    title_form = BookTitleForm()
+    suggestion_form = SuggestionInfoForm()
+    if title_form.validate_on_submit():
+        book_ISBN = title_search(title_form.title.data)
+        book_title, book_url = basic_book_info(book_ISBN)
+        return flask.render_template(
+            "search_by_title.html",
+            title_form=title_form,
+            suggestion_form=suggestion_form,
+            book_title=book_title,
+            book_url=book_url,
+            book_ISBN=book_ISBN,
+        )
+
+
+@app.route("/favorites")
+@login_required
+def favorites():
+    """Displays the current user's favorited books on the "favorites" page."""
+    suggestion_form = SuggestionInfoForm()
+    all_favorite_isbns = Favorites.query.filter_by(userEmail=current_user.email).all()
+    book_titles, book_urls = basic_book_info(all_favorite_isbns)
+    num_books = len(all_favorite_isbns)
+    return flask.render_template(
+        "favorites.html",
+        suggestion_form=suggestion_form,
         book_titles=book_titles,
         book_urls=book_urls,
-        book_ISBNs=book_ISBNs,
+        book_ISBNs=all_favorite_isbns,
         num_books=num_books,
     )
 
 
-@app.route("/get_book_info")
+@app.route("/get_book_info", methods=["POST"])
+@login_required
 def get_book_info():
-    """Generate book info based on the isbn"""
+    """Displays more specific info about a book in a separate "bookpage" page based on the provided ISBN."""
     data = flask.request.form
-    isbn = data["isbn"]
+    book_isbn = data["isbn"]
     (
         author,
         flapcopy,
@@ -135,7 +206,8 @@ def get_book_info():
         book_theme,
         book_cover,
         book_title,
-    ) = book_info(isbn)
+    ) = all_book_info(book_isbn)
+    
     return flask.render_template(
         "bookpage.html",
         author=author,
@@ -147,12 +219,6 @@ def get_book_info():
         book_cover=book_cover,
         book_title=book_title,
     )
-
-
-# Route for serving React page. Currently, this is unused.
-@bp.route("/get_book")
-def getbook():
-    return flask.render_template("index.html")
 
 
 app.register_blueprint(bp)

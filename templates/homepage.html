@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/static/homepage.css" />
+</head>
+
+<body>
+    <a class="options" href="{{url_for('logout')}}" class="page_link"><b>Logout</b></a>
+
+    <h1 id="primary_header">Welcome to the main page. What would you like to do?</h1>
+    <p id="main_content_1">
+        <a class="options" href="{{url_for('handle_theme_suggestions')}}"><b>Looking for suggestions?</b></a><br><br>
+        <a class="options" href="{{url_for('search_by_title')}}"><b>Search for Books by Title!</b></a><br><br>
+        <a class="options" href="{{url_for('favorites')}}"><b>See your favorites!</b></a>
+    </p>
+</body>
+
+</html>
