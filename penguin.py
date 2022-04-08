@@ -64,7 +64,50 @@ def book_suggestions(theme):
         return (sample_title, sample_book_url, sample_book_ISBN)
 
 
-def book_info(isbn):
+def title_search(title):
+    """Finds and returns the ISBN of the top search result given a book title."""
+    try:
+        # "start", "max", and "expandlevel" are required parameters.
+        BASE_URL = "https://reststop.randomhouse.com/resources/titles"
+        query_params = {"start": 0, "max": 1, "expandlevel": 1, "keyword": str(title)}
+
+        response = requests.get(
+            BASE_URL, params=query_params, headers={"Accept": "application/json"}
+        )
+        response_json = response.json()
+
+        book_ISBN = response_json["title"][0]["isbn"]
+        return book_ISBN
+
+    except:
+        sample_book_ISBN = 9781400079148
+        return sample_book_ISBN
+
+
+def basic_book_info(isbn):
+    """Grabs the titles and book cover URLs of a set of books using the provided ISBN number."""
+    isbn = str(isbn)
+    try:
+        BASE_URL = "https://reststop.randomhouse.com/resources/titles/"
+        book_titles = []
+        book_urls = []
+        for index in range(len(isbn)):
+            url = BASE_URL + isbn
+            response = requests.get(url, headers={"Accept": "application/json"})
+            response_json = response.json()
+
+            book_title = response_json["titleweb"]
+            book_cover = response_json["@uri"]
+
+            book_titles.append(book_title)
+            book_urls.append(book_cover)
+            return (book_title, book_cover)
+    except:
+        # This is just a place holder value for now until proper dummy return values are added later.
+        return "Nothing"
+
+
+def all_book_info(isbn):
     """Get all the information about the book using the provided ISBN number."""
     isbn = str(isbn)
     try:

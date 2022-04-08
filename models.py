@@ -1,7 +1,7 @@
 # Note: Be sure to install wtforms, flask_wtf, and wtforms.validators onto your system.
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from wtforms import StringField, SubmitField, PasswordField
+from wtforms import StringField, SubmitField, PasswordField, SelectField
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Length, ValidationError
 
@@ -57,6 +57,34 @@ class LoginForm(FlaskForm):
         validators=[InputRequired(), Length(min=2, max=10)],
         render_kw={"placeholder": "Password"},
     )
+
+
+class SuggestionInfoForm(FlaskForm):
+    """Establishes the basic fields required for a form used to pull certain information for suggested or displayed books given an ISBN."""
+
+    isbn = StringField(
+        validators=[InputRequired(), Length(min=1, max=15)],
+        render_kw={"readonly": True},
+    )
+    submit = SubmitField("Explore")
+
+
+class BookThemeForm(FlaskForm):
+    """Establishes the basic fields required for a form used to select a theme out of a list of options."""
+
+    # Note: Theme options must be added here For simplicity sake, dummyValue = dummyName.
+    theme = SelectField("theme", choices=[("dummyValue", "dummyName")])
+    submit = SubmitField("Submit")
+
+
+class BookTitleForm(FlaskForm):
+    """Establishes the basic fields required for a form used to pull certain book information given a title."""
+
+    title = StringField(
+        validators=[InputRequired(), Length(min=1, max=20)],
+        render_kw={"placeholder": "Title"},
+    )
+    submit = SubmitField("Submit")
 
 
 class Users(db.Model, UserMixin):
