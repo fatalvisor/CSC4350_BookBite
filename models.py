@@ -1,5 +1,5 @@
-# Be sure to install wtforms, flask_wtf, and wtforms.validators onto your system.
-from app import app
+# Note: Be sure to install wtforms, flask_wtf, and wtforms.validators onto your system.
+from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import StringField, SubmitField, PasswordField
 from flask_wtf import FlaskForm
@@ -9,6 +9,8 @@ db = SQLAlchemy()
 
 
 class SignupForm(FlaskForm):
+    """Establishes the basic fields required for a sign-up form instance."""
+
     email = StringField(
         validators=[InputRequired(), Length(min=1, max=64)],
         render_kw={"placeholder": "Email"},
@@ -27,12 +29,14 @@ class SignupForm(FlaskForm):
     submit = SubmitField("Sign Up")
 
     def validate_email(self, email):
+        """Checks if a user with a specific email already exists in the database. If so, throw a warning."""
         existing_email = Users.query.filter_by(email=email.data).first()
 
         if existing_email:
             raise ValidationError("That email already exists.")
 
     def validate_username(self, username):
+        """Checks if a user with a specific username already exists in the database. If so, throw a warning."""
         existing_username = Users.query.filter_by(username=username.data).first()
 
         if existing_username:
@@ -40,8 +44,10 @@ class SignupForm(FlaskForm):
 
 
 class LoginForm(FlaskForm):
+    """Establishes the basic fields required for a login form instance."""
+
     email = StringField(
-        validators=[InputRequired(), Length(min=2, max=10)],
+        validators=[InputRequired(), Length(min=2, max=64)],
         render_kw={"placeholder": "Email"},
     )
 

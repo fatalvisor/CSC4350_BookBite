@@ -20,7 +20,7 @@ def get_themes(themes):
     return "None"
 
 
-def book_search(theme):
+def book_suggestions(theme):
     """Finds and returns the titles and cover image URLs of randomly selected books falling under a certain theme."""
     try:
         # "start", "max", and "expandlevel" are required parameters.
@@ -103,4 +103,5 @@ def book_info(isbn):
             book_title,
         )
     except:
-        return "Nothing"  # This is just place holder
+        # This is just a place holder value for now until proper dummy return values are added later.
+        return "Nothing"

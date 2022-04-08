@@ -1,25 +1,23 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Sign Up</title>
-    </head>
-    <h1>Sign Up</h1>
-    <body>
-        <form action="/signup" method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.email }}    <br> <br>
-            {{ form.username }} <br> <br>
-            {{ form.password }} <br> <br>
-            {{ form.submit }}
-    
-    
-    
-        </form>
-           <br> 
-                <label>Already have an account?</label>
-                <a href="{{url_for('login')}}">Login!</a>
-            </form>
-            
-    </body>
 
-    </html>
+<head>
+    <title>Sign Up</title>
+</head>
+
+<body>
+    <h1>Sign Up</h1>
+    <form action="/signup_post" method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.email }} <br> <br>
+        {{ form.username }} <br> <br>
+        {{ form.password }} <br> <br>
+        {{ form.submit }}
+    </form><br>
+
+    <label>Already have an account?</label>
+    <a href="{{url_for('login')}}">Login!</a>
+
+</body>
+
+</html>
