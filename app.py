@@ -28,7 +28,11 @@ bcrypt = Bcrypt(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-bp = flask.Blueprint("bp", __name__, template_folder="./static/react",)
+bp = flask.Blueprint(
+    "bp",
+    __name__,
+    template_folder="./static/react",
+)
 
 db.init_app(app)
 with app.app_context():
@@ -147,6 +151,35 @@ def get_book_info():
         book_cover=book_cover,
         book_title=book_title,
     )
+
+
+@app.route("/get_favorites", method="POST")
+def get_favorites():
+    favorites = Favorites.query.filter(Favorites.userEmail == current_user).all()
+    favorite_list = []
+    for i in favorites:
+        favorite_list.append(i.isbn)
+
+    # Need to make api calls for every isbn in the list and get new list based on that info and then pass that into html.
+
+
+# Need current user to store current user, so need to talk to maryam about user login
+# And make sure that what i am doing will work.
+@app.route("/add_favorite", method=["GET", "POST"])
+def add_favorite():
+    isbn = flask.request.form.get("isbn")
+    new_favorite = Favorites(username=current_user, bookISBN=isbn)
+    db.session.add(new_favorite)
+    db.session.commit()
+
+
+@app.route("/delete_favorite", method=["GET", "POST"])
+def delete_favorite():
+    isbn = flask.request.form.get("isbn")
+    delete_book = Favorites.query.filter_by(isbn=isbn, username=current_user)
+    db.session.delete(delete_book)
+    db.session.commit()
+    return flask.redirect(flask.url_for("get_favorites"))
 
 
 # Route for serving React page. Currently, this is unused.
