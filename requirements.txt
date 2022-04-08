@@ -4,6 +4,7 @@ flask_login
 requests
 python-dotenv
 psycopg2
+bs4
 bcrypt
 flask-bcrypt
 WTForms
