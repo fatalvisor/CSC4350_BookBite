@@ -201,7 +201,7 @@ def favorites():
 
 # Need current user to store current user, so need to talk to maryam about user login
 # And make sure that what i am doing will work.
-@app.route("/add_favorite", method=["GET", "POST"])
+@app.route("/add_favorite", methods=["GET", "POST"])
 def add_favorite():
     isbn = flask.request.form.get("isbn")
     new_favorite = Favorites(userEmail=current_user.email, bookISBN=isbn)
@@ -215,7 +215,7 @@ def delete_favorite():
     delete_book = Favorites.query.filter_by(isbn=isbn, userEmail=current_user.email)
     db.session.delete(delete_book)
     db.session.commit()
-    return flask.redirect(flask.url_for("get_favorites"))
+    return flask.redirect(flask.url_for("favorites"))
 
 
 @app.route("/get_book_info", methods=["POST"])
