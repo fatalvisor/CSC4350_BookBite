@@ -4,3 +4,8 @@ flask_login
 requests
 python-dotenv
 psycopg2
+bcrypt
+flask-bcrypt
+WTForms
+Flask-WTF
+wtforms-validators
