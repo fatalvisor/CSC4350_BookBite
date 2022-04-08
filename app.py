@@ -37,7 +37,11 @@ bcrypt = Bcrypt(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-bp = flask.Blueprint("bp", __name__, template_folder="./static/react",)
+bp = flask.Blueprint(
+    "bp",
+    __name__,
+    template_folder="./static/react",
+)
 
 db.init_app(app)
 with app.app_context():
@@ -191,6 +195,25 @@ def favorites():
     )
 
 
+# Need current user to store current user, so need to talk to maryam about user login
+# And make sure that what i am doing will work.
+@app.route("/add_favorite", method=["GET", "POST"])
+def add_favorite():
+    isbn = flask.request.form.get("isbn")
+    new_favorite = Favorites(username=current_user, bookISBN=isbn)
+    db.session.add(new_favorite)
+    db.session.commit()
+
+
+@app.route("/delete_favorite", method=["GET", "POST"])
+def delete_favorite():
+    isbn = flask.request.form.get("isbn")
+    delete_book = Favorites.query.filter_by(isbn=isbn, username=current_user)
+    db.session.delete(delete_book)
+    db.session.commit()
+    return flask.redirect(flask.url_for("get_favorites"))
+
+
 @app.route("/get_book_info", methods=["POST"])
 @login_required
 def get_book_info():
@@ -207,7 +230,7 @@ def get_book_info():
         book_cover,
         book_title,
     ) = all_book_info(book_isbn)
-    
+
     return flask.render_template(
         "bookpage.html",
         author=author,
