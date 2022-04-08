@@ -103,8 +103,9 @@ def basic_book_info(isbn):
             book_urls.append(book_cover)
             return (book_title, book_cover)
     except:
-        # This is just a place holder value for now until proper dummy return values are added later.
-        return "Nothing"
+        sample_title = [""]
+        sample_book_url = [""]
+        return sample_title, sample_book_url
 
 
 def all_book_info(isbn):

@@ -6,8 +6,9 @@
 </head>
 
 <body>
-    <form method="POST" action="/homepage">
-        <input type="submit" value="Return Home.">
+    <form action="/homepage" method="POST">
+        {{ return_home_button.csrf_token }}
+        {{ return_home_button.submit }}
     </form>
 
     <h1>You Currently Have no Favorites!:</h1>

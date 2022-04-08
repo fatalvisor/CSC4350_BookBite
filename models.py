@@ -87,6 +87,18 @@ class BookTitleForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class ReturnHomeButton(FlaskForm):
+    """Creates a form with a single button to send the user back to the homepage when clicked.."""
+
+    submit = SubmitField("Return home")
+
+
+class LogoutButton(FlaskForm):
+    """Creates a form with a single button to send the user back to the login page when clicked.."""
+
+    submit = SubmitField("Logout")
+
+
 class Users(db.Model, UserMixin):
     """Defines a "Users" table in the database with two basic attributes, an ID and the user's login email."""
 
