@@ -1,5 +1,4 @@
 # Note: Be sure to install bcrypt, flask-bcrypt, and flask_wtf (if you haven't already) onto your system.
-from crypt import methods
 import os
 import flask
 import bcrypt
@@ -14,6 +13,8 @@ from flask_login import (
     current_user,
 )
 from models import (
+    ReturnHomeButton,
+    LogoutButton,
     db,
     SignupForm,
     LoginForm,
@@ -100,7 +101,7 @@ def login_post():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                return flask.render_template("homepage.html")
+                return flask.redirect(flask.url_for("homepage"))
 
     return flask.redirect(flask.url_for("login"))
 
@@ -113,11 +114,12 @@ def logout():
     return flask.redirect(flask.url_for("login"))
 
 
-@app.route("/homepage", methods=["GET"])
+@app.route("/homepage", methods=["GET", "POST"])
 @login_required
 def homepage():
     """Renders the basic landing page from which most other HTML pages can be reached."""
-    return flask.render_template("homepage.html")
+    logout_button = LogoutButton()
+    return flask.render_template("homepage.html", logout_button=logout_button)
 
 
 @app.route("/suggestions")
@@ -187,7 +189,10 @@ def favorites():
     book_titles, book_urls = basic_book_info(all_favorite_isbns)
     num_books = len(all_favorite_isbns)
     if num_books == 0:
-        return flask.render_template("no_favorites.html")
+        return_home_button = ReturnHomeButton()
+        return flask.render_template(
+            "no_favorites.html", return_home_button=return_home_button
+        )
     else:
         return flask.render_template(
             "favorites.html",
