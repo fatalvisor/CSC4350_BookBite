@@ -161,23 +161,32 @@ def search_by_title():
     return flask.render_template("search_by_title.html", title_form=title_form)
 
 
-@app.route("/handle_title_selection")
+@app.route("/handle_title_selection", methods=["GET", "POST"])
 @login_required
 def handle_title_selection():
     """Returns the basic search_by_title page."""
     title_form = BookTitleForm()
     suggestion_form = SuggestionInfoForm()
     if title_form.validate_on_submit():
-        book_ISBN = title_search(title_form.title.data)
-        book_title, book_url = basic_book_info(book_ISBN)
-        return flask.render_template(
-            "search_by_title.html",
-            title_form=title_form,
-            suggestion_form=suggestion_form,
-            book_title=book_title,
-            book_url=book_url,
-            book_ISBN=book_ISBN,
-        )
+        try:
+            book_ISBN = title_search(title_form.title.data)
+            book_title, book_url = basic_book_info(book_ISBN)
+            return flask.render_template(
+                "search_by_title.html",
+                title_form=title_form,
+                suggestion_form=suggestion_form,
+                book_title=book_title,
+                book_url=book_url,
+                book_ISBN=book_ISBN,
+                num_books=1,
+            )
+        except:
+            return flask.render_template(
+                "search_by_title.html",
+                title_form=title_form,
+                suggestion_form=suggestion_form,
+                error=1,
+            )
 
 
 @app.route("/favorites")

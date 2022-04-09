@@ -1,14 +1,32 @@
-<!DOCTYPE html>
 <html>
 
 <head>
-    <link rel="stylesheet" href="/static/search_by_title.css" />
+    <link rel="stylesheet" href="/static/book_search_by_title.css" />
 </head>
 
 <body>
-    <h1>Provide the Title, Suggestions will be Provided:</h1>
-    <a id="main_content_1" href="{{url_for('logout')}}" class="page_link"><b>Explore:</b></a>
-    <a id="main_content_1" href="{{url_for('logout')}}" class="page_link"><b>Search for Books by Title!</b></a>
+    <h1>Provide the title! Suggestions will be Provided:</h1>
+    <!--Form to display themes as a dropdown will be shown here.-->
+    <form method="POST" action="/handle_title_selection">
+        {{ title_form.csrf_token }}
+        {{ title_form.title }}
+        {{ title_form.submit }}
+    </form>
+    {% if error is defined %}
+    <p>No results, try again</p>
+    {% endif %}
+    {% if num_books is defined %}
+    <div>
+        <p><b>Title: {{book_title}}</b></p>
+        <form action="/get_book_info" method="POST">
+            {{ suggestion_form.csrf_token }}
+            ISBN:
+            {{ suggestion_form.isbn(value=book_ISBN) }}
+            {{ suggestion_form.submit }}
+        </form>
+        <img src="{{book_url}}" />
+    </div>
+    {% endif %}
 </body>
 
 </html>
