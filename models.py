@@ -151,7 +151,7 @@ class Favorites(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     userEmail = db.Column(db.String(100), nullable=False)
-    bookISBN = db.Column(db.Integer, nullable=False)
+    bookISBN = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
-        return "<Review %r>" % self.bookISBN
+        return "<Favorites %r>" % self.bookISBN

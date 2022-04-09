@@ -12,14 +12,19 @@
     </form>
     <h1>Provide the Theme, Suggestions will be Provided:</h1>
 
-    <!--Form to display themes as a dropdown will be shown here.-->
     <form method="POST" action="/handle_theme_suggestions">
         {{ theme_form.csrf_token }}
         {{ theme_form.theme }}
         {{ theme_form.submit }}
     </form>
+
     {% if num_books is defined %}
     {% for index in range(num_books) %}
+    <form method="POST" action="/add_favorite">
+        {{ favorites_form.csrf_token }}
+        {{ favorites_form.isbn }}
+        {{ favorites_form.submit }}
+    </form>
     <div>
         <p><b>Title: {{book_titles[index]}}</b></p>
         <form action="/get_book_info" method="POST">
