@@ -117,6 +117,16 @@ class BookTitleForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class FavoritesForm(FlaskForm):
+    """Establishes the basic fields required for a form used to add or delete a favorite book by ISBN."""
+
+    isbn = StringField(
+        validators=[InputRequired(), Length(min=1, max=15)],
+        render_kw={"placeholder": "isbn"},
+    )
+    submit = SubmitField("Submit")
+
+
 class ReturnHomeButton(FlaskForm):
     """Creates a form with a single button to send the user back to the homepage when clicked.."""
 
