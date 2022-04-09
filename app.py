@@ -122,7 +122,7 @@ def homepage():
     return flask.render_template("homepage.html", logout_button=logout_button)
 
 
-@app.route("/suggestions")
+@app.route("/suggestions", methods=["GET", "POST"])
 @login_required
 def suggestions():
     """Returns the basic suggestions page where books can be suggested to the user based on a chosen theme."""
@@ -133,7 +133,7 @@ def suggestions():
     )
 
 
-@app.route("/handle_theme_suggestions")
+@app.route("/handle_theme_suggestions", methods=["GET", "POST"])
 @login_required
 def handle_theme_suggestions():
     """Based on the theme selected, the titles, ISBNs, and cover images of a random set of books under said theme is returned and re-rendered on the suggestions page."""

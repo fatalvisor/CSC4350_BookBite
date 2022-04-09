@@ -8,7 +8,11 @@
 <body>
     <h1>Provide the Theme, Suggestions will be Provided:</h1>
     <!--Form to display themes as a dropdown will be shown here.-->
-
+    <form method="POST" action="/suggestions">
+        {{ theme_form.csrf_token }}
+        {{ theme_form.theme }}
+        {{ theme_form.submit }}
+    </form>
     {% if num_books is defined %}
     {% for index in range(num_books) %}
     <div>
