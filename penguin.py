@@ -69,7 +69,13 @@ def title_search(title):
     try:
         # "start", "max", and "expandlevel" are required parameters.
         BASE_URL = "https://reststop.randomhouse.com/resources/titles"
-        query_params = {"start": 0, "max": 1, "expandlevel": 1, "keyword": str(title)}
+        query_params = {
+            "start": 0,
+            "max": 1,
+            "expandlevel": 1,
+            "authorid": 0,
+            "keyword": str(title),
+        }
 
         response = requests.get(
             BASE_URL, params=query_params, headers={"Accept": "application/json"}
