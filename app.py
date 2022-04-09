@@ -128,8 +128,12 @@ def suggestions():
     """Returns the basic suggestions page where books can be suggested to the user based on a chosen theme."""
     theme_form = BookThemeForm()
     suggestion_form = SuggestionInfoForm()
+    return_home_button = ReturnHomeButton()
     return flask.render_template(
-        "suggestions.html", theme_form=theme_form, suggestion_form=suggestion_form
+        "suggestions.html",
+        theme_form=theme_form,
+        suggestion_form=suggestion_form,
+        return_home_button=return_home_button,
     )
 
 
