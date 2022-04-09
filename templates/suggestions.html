@@ -8,7 +8,7 @@
 <body>
     <h1>Provide the Theme, Suggestions will be Provided:</h1>
     <!--Form to display themes as a dropdown will be shown here.-->
-    <form method="POST" action="/suggestions">
+    <form method="POST" action="/handle_theme_suggestions">
         {{ theme_form.csrf_token }}
         {{ theme_form.theme }}
         {{ theme_form.submit }}
