@@ -1,71 +1,36 @@
-# Getting Started with Create React App
-
 The URL for the Heroku app is: https://aqueous-castle-25369.herokuapp.com/ \
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+# Welcome to Book Bite
 
-In the project directory, you can run:
+We are making this application based on the the idea of creating a web page of book browsing and reviewing
+In Sprint 1, the user should be able to sign up by using email, username and password. The user logs in with email and password
+Upon landing on the main page, the user has three option: get books recommendations based on themes, search book by title, and view books in favorite list
+On the book recommendation page, the user can choose from a drop list of themes. Then the user will get 6 random books based on the chosen theme.
+On the search book by title page, the user can type in the book title and hit submit. The result is generated underneath.
+On the favorite page, the user can see a list of books he added to the list.
+Upon every book title shown on the page, there is a button to let the user explore more information about the book. The page will display basic information about the book such as author, author biography, a summary of the book, the themes of the book, and the page number of the book.
+The user can also add the book to favorite list.
 
-### `npm start`
+## Technology used in this project
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The project utilizes the **Flask** framework for Python to run the application.
+In addition, we install **requests** to pull API requests, and **dotenv** to pull my API key in the _.env_ file.
+The library that we use is **os** to load my API key from _.env_ file.
+The API that we use for this project are **Penguin**.  
+The web interface is coded with HTML and styled with CSS.
+User authentication is handled by **flask-login**, with function like **is_authenticated**, **load_user**, **login_user**, **logout_user**,...
+Database model is handled with **FlaskAlchemy** and **PostgreSQL** the database is hosted on Heroku.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Things to install for the app
 
-### `npm test`
+Heroku: `sudo curl https://cli-assets.heroku.com/install.sh | sh # install Heroku`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+PostgreSQL: `sudo apt install postgresql`
+`sudo service postgresql start`
+`sudo -u postgres psql # just testing that psql is installed. You should get an interactive prompt. Quit by entering "\q"`
+`pip3 install psycopg2-binary`
+`pip3 install Flask-SQLAlchemy==2.1`
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Python: `pip3 install -r requirements.txt` to install all other packages for this project.
+After you install all the dependencies, you need to run `heroku addons:create heroku-postgresql:hobby-dev -a {your-app-name}` to set up the database.
+Then you run `heroku config -a {your-app-name}` and set the **DATABASE_URL** in \*.env\_ file to this link. The code already has a function to handle changing the url from "postgres" to "postgresql"
