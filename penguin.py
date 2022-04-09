@@ -66,22 +66,18 @@ def book_suggestions(theme):
 
 def title_search(title):
     """Finds and returns the ISBN of the top search result given a book title."""
-    try:
-        # "start", "max", and "expandlevel" are required parameters.
-        BASE_URL = "https://reststop.randomhouse.com/resources/titles"
-        query_params = {"start": 0, "max": 1, "expandlevel": 1, "keyword": str(title)}
 
-        response = requests.get(
-            BASE_URL, params=query_params, headers={"Accept": "application/json"}
-        )
-        response_json = response.json()
+    # "start", "max", and "expandlevel" are required parameters.
+    BASE_URL = "https://reststop.randomhouse.com/resources/titles"
+    query_params = {"start": 0, "max": 1, "expandlevel": 1, "search": str(title)}
 
-        book_ISBN = response_json["title"][0]["isbn"]
-        return book_ISBN
+    response = requests.get(
+        BASE_URL, params=query_params, headers={"Accept": "application/json"}
+    )
+    response_json = response.json()
 
-    except:
-        sample_book_ISBN = 9781400079148
-        return sample_book_ISBN
+    book_ISBN = response_json["title"]["isbn"]
+    return book_ISBN
 
 
 def basic_book_info(isbn):
