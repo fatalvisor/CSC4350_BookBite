@@ -34,3 +34,7 @@ PostgreSQL: `sudo apt install postgresql`
 Python: `pip3 install -r requirements.txt` to install all other packages for this project.
 After you install all the dependencies, you need to run `heroku addons:create heroku-postgresql:hobby-dev -a {your-app-name}` to set up the database.
 Then you run `heroku config -a {your-app-name}` and set the **DATABASE_URL** in \*.env\_ file to this link. The code already has a function to handle changing the url from "postgres" to "postgresql"
+
+## Linting
+
+The pylintrc file was added to disable "scoped session error" because pylint was giving a false positive error as if our database .add and .commit were not matched to any databases. Since this was obviously false, the error was disabled.
