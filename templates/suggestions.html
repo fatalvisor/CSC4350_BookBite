@@ -18,7 +18,7 @@
     <div>
         <p><b>Title: {{book_titles[index]}}</b></p>
         <form action="/get_book_info" method="POST">
-
+            {{ suggestion_form.csrf_token }}
             ISBN:
             {{ suggestion_form.isbn(value=book_ISBNs[index]) }}
             {{ suggestion_form.submit }}
