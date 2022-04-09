@@ -148,7 +148,7 @@ def all_book_info(isbn):
         )
     except:
         # This is just a place holder value for now until proper dummy return values are added later.
-        author = "Devs"
+        author = "Developers"
         flapcopy = "This book is broken"
         author_bio = "I don't know why but this book is not working"
         book_isbn = 123456789123
