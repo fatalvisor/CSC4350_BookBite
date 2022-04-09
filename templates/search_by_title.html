@@ -12,10 +12,17 @@
         {{ title_form.title }}
         {{ title_form.submit }}
     </form>
+
     {% if error is defined %}
     <p>No results, try again</p>
     {% endif %}
+
     {% if num_books is defined %}
+    <form method="POST" action="/add_favorite">
+        {{ favorites_form.csrf_token }}
+        {{ favorites_form.isbn }}
+        {{ favorites_form.submit }}
+    </form>
     <div>
         <p><b>Title: {{book_title}}</b></p>
         <form action="/get_book_info" method="POST">

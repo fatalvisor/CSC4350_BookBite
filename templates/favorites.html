@@ -12,10 +12,11 @@
     <div class=center-text>
         <h1>Your Favorites:</h1>
         <p>Type an ISBN number below to remove any favorites!</p>
-        <form method="POST" action="/delete_favorite">
-            <input type="text" name="isbn" style="width: 500px" placeholder="isbn">
-            <input type="submit" value="Submit">
-        </form>
+        <!-- <form method="POST" action="/delete_favorite">
+            {{ favorites_form.csrf_token }}
+            {{ favorites_form.isbn }}
+            {{ favorites_form.submit }}
+        </form> -->
     </div>
     {% if num_books is defined %}
     {% for index in range(num_books) %}

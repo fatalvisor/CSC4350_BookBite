@@ -21,6 +21,7 @@ from models import (
     SuggestionInfoForm,
     BookThemeForm,
     BookTitleForm,
+    FavoritesForm,
     Users,
     Favorites,
 )
@@ -144,7 +145,7 @@ def handle_theme_suggestions():
     theme_form = BookThemeForm()
     suggestion_form = SuggestionInfoForm()
     return_home_button = ReturnHomeButton()
-    # favorites_form = handle_theme_suggestions()
+    favorites_form = FavoritesForm()
     if theme_form.validate_on_submit():
         book_titles, book_urls, book_ISBNs = book_suggestions(theme_form.theme.data)
         num_books = len(book_titles)
@@ -152,6 +153,7 @@ def handle_theme_suggestions():
             "suggestions.html",
             theme_form=theme_form,
             suggestion_form=suggestion_form,
+            favorites_form=favorites_form,
             return_home_button=return_home_button,
             book_titles=book_titles,
             book_urls=book_urls,
@@ -174,6 +176,7 @@ def handle_title_selection():
     """Returns the basic search_by_title page."""
     title_form = BookTitleForm()
     suggestion_form = SuggestionInfoForm()
+    favorites_form = FavoritesForm()
     if title_form.validate_on_submit():
         try:
             book_ISBN = title_search(title_form.title.data)
@@ -182,6 +185,7 @@ def handle_title_selection():
                 "search_by_title.html",
                 title_form=title_form,
                 suggestion_form=suggestion_form,
+                favorites_form=favorites_form,
                 book_title=book_title,
                 book_url=book_url,
                 book_ISBN=book_ISBN,
@@ -191,6 +195,7 @@ def handle_title_selection():
             return flask.render_template(
                 "search_by_title.html",
                 title_form=title_form,
+                favorites_form=favorites_form,
                 suggestion_form=suggestion_form,
                 error=1,
             )
@@ -201,18 +206,31 @@ def handle_title_selection():
 def favorites():
     """Displays the current user's favorited books on the "favorites" page."""
     suggestion_form = SuggestionInfoForm()
-    all_favorite_isbns = Favorites.query.filter_by(userEmail=current_user.email).all()
-    book_titles, book_urls = basic_book_info(all_favorite_isbns)
-    num_books = len(all_favorite_isbns)
+    favorites_form = FavoritesForm()
+    all_favorites = Favorites.query.filter_by(userEmail=current_user.email).all()
+    num_books = len(all_favorites)
+    book_titles = []
+    book_urls = []
+    all_favorite_isbns = []
+
+    for i in range(num_books):
+        book_title, book_url = basic_book_info(all_favorites[i].bookISBN)
+        book_titles.append(book_title)
+        book_urls.append(book_url)
+        all_favorite_isbns.append(all_favorites[i].bookISBN)
+
     if num_books == 0:
         return_home_button = ReturnHomeButton()
         return flask.render_template(
-            "no_favorites.html", return_home_button=return_home_button
+            "no_favorites.html",
+            return_home_button=return_home_button,
+            favorites_form=favorites_form,
         )
     else:
         return flask.render_template(
             "favorites.html",
             suggestion_form=suggestion_form,
+            favorites_form=favorites_form,
             book_titles=book_titles,
             book_urls=book_urls,
             book_ISBNs=all_favorite_isbns,
@@ -220,23 +238,28 @@ def favorites():
         )
 
 
-# Need current user to store current user, so need to talk to maryam about user login
-# And make sure that what i am doing will work.
 @app.route("/add_favorite", methods=["GET", "POST"])
 def add_favorite():
-    isbn = flask.request.form.get("isbn")
-    new_favorite = Favorites(userEmail=current_user.email, bookISBN=isbn)
-    db.session.add(new_favorite)
-    db.session.commit()
+    favorites_form = FavoritesForm()
+    if favorites_form.validate_on_submit():
+        isbn = favorites_form.isbn.data
+        new_favorite = Favorites(userEmail=current_user.email, bookISBN=isbn)
+        db.session.add(new_favorite)
+        db.session.commit()
+        return flask.redirect(flask.url_for("suggestions"))
 
 
 @app.route("/delete_favorite", methods=["GET", "POST"])
 def delete_favorite():
-    isbn = flask.request.form.get("isbn")
-    delete_book = Favorites.query.filter_by(isbn=isbn, userEmail=current_user.email)
-    db.session.delete(delete_book)
-    db.session.commit()
-    return flask.redirect(flask.url_for("favorites"))
+    favorites_form = FavoritesForm()
+    if favorites_form.validate_on_submit():
+        isbn = favorites_form.isbn.data
+        delete_book = Favorites.query.filter_by(
+            userEmail=current_user.email, bookISBN=isbn
+        )
+        db.session.delete(delete_book)
+        db.session.commit()
+        return flask.redirect(flask.url_for("favorites"))
 
 
 @app.route("/get_book_info", methods=["POST"])
