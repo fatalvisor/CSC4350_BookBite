@@ -143,6 +143,7 @@ def handle_theme_suggestions():
     """Based on the theme selected, the titles, ISBNs, and cover images of a random set of books under said theme is returned and re-rendered on the suggestions page."""
     theme_form = BookThemeForm()
     suggestion_form = SuggestionInfoForm()
+    return_home_button = ReturnHomeButton()
     # favorites_form = handle_theme_suggestions()
     if theme_form.validate_on_submit():
         book_titles, book_urls, book_ISBNs = book_suggestions(theme_form.theme.data)
@@ -151,6 +152,7 @@ def handle_theme_suggestions():
             "suggestions.html",
             theme_form=theme_form,
             suggestion_form=suggestion_form,
+            return_home_button=return_home_button,
             book_titles=book_titles,
             book_urls=book_urls,
             book_ISBNs=book_ISBNs,
