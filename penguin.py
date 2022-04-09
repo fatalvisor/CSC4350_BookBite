@@ -148,4 +148,21 @@ def all_book_info(isbn):
         )
     except:
         # This is just a place holder value for now until proper dummy return values are added later.
-        return "Nothing"
+        author = "Devs"
+        flapcopy = "This book is broken"
+        author_bio = "I don't know why but this book is not working"
+        book_isbn = 123456789123
+        page_num = 35
+        book_theme = "None"
+        book_cover = "https://reststop.randomhouse.com/resources/titles/9780142002520"
+        book_title = "Page Not Found"
+        return (
+            author,
+            flapcopy,
+            author_bio,
+            book_isbn,
+            page_num,
+            book_theme,
+            book_cover,
+            book_title,
+        )
