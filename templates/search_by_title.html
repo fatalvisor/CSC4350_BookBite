@@ -5,6 +5,10 @@
 </head>
 
 <body>
+    <form action="/homepage" method="POST">
+        {{ return_home_button.csrf_token }}
+        {{ return_home_button.submit }}
+    </form>
     <h1>Provide the title! Suggestions will be Provided:</h1>
     <!--Form to display themes as a dropdown will be shown here.-->
     <form method="POST" action="/handle_title_selection">

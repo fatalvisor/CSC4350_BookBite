@@ -22,7 +22,7 @@ class SignupForm(FlaskForm):
     )
 
     password = PasswordField(
-        validators=[InputRequired(), Length(min=2, max=10)],
+        validators=[InputRequired(), Length(min=2, max=15)],
         render_kw={"placeholder": "Password"},
     )
 
