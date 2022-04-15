@@ -167,7 +167,12 @@ def handle_theme_suggestions():
 def search_by_title():
     """Returns the basic search_by_title page where books can be searched directly for using a title input."""
     title_form = BookTitleForm()
-    return flask.render_template("search_by_title.html", title_form=title_form)
+    return_home_button = ReturnHomeButton()
+    return flask.render_template(
+        "search_by_title.html",
+        title_form=title_form,
+        return_home_button=return_home_button,
+    )
 
 
 @app.route("/handle_title_selection", methods=["GET", "POST"])
@@ -207,6 +212,7 @@ def favorites():
     """Displays the current user's favorited books on the "favorites" page."""
     suggestion_form = SuggestionInfoForm()
     favorites_form = FavoritesForm()
+    return_home_button = ReturnHomeButton()
     all_favorites = Favorites.query.filter_by(userEmail=current_user.email).all()
     num_books = len(all_favorites)
     book_titles = []
@@ -220,7 +226,6 @@ def favorites():
         all_favorite_isbns.append(all_favorites[i].bookISBN)
 
     if num_books == 0:
-        return_home_button = ReturnHomeButton()
         return flask.render_template(
             "no_favorites.html",
             return_home_button=return_home_button,
@@ -231,6 +236,7 @@ def favorites():
             "favorites.html",
             suggestion_form=suggestion_form,
             favorites_form=favorites_form,
+            return_home_button=return_home_button,
             book_titles=book_titles,
             book_urls=book_urls,
             book_ISBNs=all_favorite_isbns,
@@ -240,6 +246,7 @@ def favorites():
 
 @app.route("/add_favorite", methods=["GET", "POST"])
 def add_favorite():
+    """Adds a valid book ISBN to the favorites list before returning the user back to the book suggestions page."""
     favorites_form = FavoritesForm()
     if favorites_form.validate_on_submit():
         isbn = favorites_form.isbn.data
@@ -251,13 +258,14 @@ def add_favorite():
 
 @app.route("/delete_favorite", methods=["GET", "POST"])
 def delete_favorite():
+    """If found, removes a book from the favorites list before returning the user back to the favorites page."""
     favorites_form = FavoritesForm()
     if favorites_form.validate_on_submit():
         isbn = favorites_form.isbn.data
-        delete_book = Favorites.query.filter_by(
+        deleted_book = Favorites.query.filter_by(
             userEmail=current_user.email, bookISBN=isbn
-        )
-        db.session.delete(delete_book)
+        ).first()
+        db.session.delete(deleted_book)
         db.session.commit()
         return flask.redirect(flask.url_for("favorites"))
 

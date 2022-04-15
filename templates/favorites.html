@@ -6,17 +6,18 @@
 </head>
 
 <body>
-    <form method="POST" action="/homepage">
-        <input type="submit" value="Return Home.">
+    <form action="/homepage" method="POST">
+        {{ return_home_button.csrf_token }}
+        {{ return_home_button.submit }}
     </form>
     <div class=center-text>
         <h1>Your Favorites:</h1>
         <p>Type an ISBN number below to remove any favorites!</p>
-        <!-- <form method="POST" action="/delete_favorite">
+        <form method="POST" action="/delete_favorite">
             {{ favorites_form.csrf_token }}
             {{ favorites_form.isbn }}
             {{ favorites_form.submit }}
-        </form> -->
+        </form>
     </div>
     {% if num_books is defined %}
     {% for index in range(num_books) %}
