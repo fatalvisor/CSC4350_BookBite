@@ -57,9 +57,7 @@ def book_suggestions(theme):
 
     except:
         sample_title = ["Sample Title"]
-        sample_book_url = [
-            "https://reststop.randomhouse.com/resources/titles/9781400079148"
-        ]
+        sample_book_url = ["../static/sample_book_cover.jpg"]
         sample_book_ISBN = [9781400079148]
         return (sample_title, sample_book_url, sample_book_ISBN)
 
@@ -99,8 +97,8 @@ def basic_book_info(isbn):
         book_urls.append(book_cover)
         return (book_title, book_cover)
     except:
-        sample_title = [""]
-        sample_book_url = [""]
+        sample_title = ["Book Missing Information"]
+        sample_book_url = ["../static/sample_book_cover.jpg"]
         return sample_title, sample_book_url
 
 
@@ -128,8 +126,7 @@ def all_book_info(isbn):
         # Grabs various other useful pieces of information about the book.
         book_isbn = response_json["isbn"]
         page_num = response_json["pages"]
-        themes = response_json["themes"]
-        book_theme = get_themes(themes)
+        book_theme = get_themes(response_json["themes"])
         book_cover = response_json["@uri"]
         book_title = response_json["titleweb"]
         return (
@@ -143,15 +140,16 @@ def all_book_info(isbn):
             book_title,
         )
     except:
-        # This is just a place holder value for now until proper dummy return values are added later.
-        author = "Developers"
-        flapcopy = "This book is broken"
-        author_bio = "I don't know why but this book is not working"
+        author = "Anonymous"
+        flapcopy = (
+            "This is what an example of a newly-discovered but broken book looks like."
+        )
+        author_bio = "This is an author who, for many years, has eluded the public eye. His origins are currently unknown."
         book_isbn = 123456789123
         page_num = 35
         book_theme = "None"
-        book_cover = "https://reststop.randomhouse.com/resources/titles/9780142002520"
-        book_title = "Page Not Found"
+        book_cover = "../static/sample_book_cover.jpg"
+        book_title = "Book Missing Information"
         return (
             author,
             flapcopy,

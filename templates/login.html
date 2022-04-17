@@ -7,6 +7,15 @@
 
 <body>
     <h1>LOGIN</h1>
+    <!--Flashed messages will appear here.-->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <b>{{message}}</b>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <form action="login_post" method="POST">
         {{ form.hidden_tag() }}
         {{ form.email }} <br> <br>

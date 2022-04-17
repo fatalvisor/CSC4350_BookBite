@@ -86,6 +86,7 @@ def signup_post():
 
         return flask.redirect(flask.url_for("login"))
 
+    flask.flash("USER ALREADY EXISTS. PLEASE TRY AGAIN.")
     return flask.redirect(flask.url_for("signup"))
 
 
@@ -107,6 +108,7 @@ def login_post():
                 login_user(user)
                 return flask.redirect(flask.url_for("homepage"))
 
+    flask.flash("USER DOES NOT EXIST. PLEASE TRY AGAIN.")
     return flask.redirect(flask.url_for("login"))
 
 
@@ -136,11 +138,9 @@ def suggestions():
     return_home_button = ReturnHomeButton()
     theme_form = BookThemeForm()
     bookinfo_form_a = BookInfoFormAdd()
-    route_name = "suggestions"
     return flask.render_template(
         "suggestions.html",
         return_home_button=return_home_button,
-        route_name=route_name,
         theme_form=theme_form,
         bookinfo_form_a=bookinfo_form_a,
     )
@@ -193,13 +193,13 @@ def handle_dualsubmits_add():
 @app.route("/search_by_title")
 @login_required
 def search_by_title():
-    """Returns the basic search_by_title page where books can be searched directly for using a title input."""
-    title_form = BookTitleForm()
+    """Returns the basic search_by_title page where books can be directly searched for using a title input."""
     return_home_button = ReturnHomeButton()
+    title_form = BookTitleForm()
     return flask.render_template(
         "search_by_title.html",
-        title_form=title_form,
         return_home_button=return_home_button,
+        title_form=title_form,
     )
 
 
@@ -207,18 +207,20 @@ def search_by_title():
 @login_required
 def handle_title_selection():
     """Returns basic information about a single book based on the provided title input."""
+    return_home_button = ReturnHomeButton()
+    route_name = "search_by_title"
     title_form = BookTitleForm()
     bookinfo_form_a = BookInfoFormAdd()
-    return_home_button = ReturnHomeButton()
     if title_form.validate_on_submit():
         try:
             book_ISBN = title_search(title_form.title.data)
             book_title, book_url = basic_book_info(book_ISBN)
             return flask.render_template(
                 "search_by_title.html",
+                return_home_button=return_home_button,
+                route_name=route_name,
                 title_form=title_form,
                 bookinfo_form_a=bookinfo_form_a,
-                return_home_button=return_home_button,
                 book_title=book_title,
                 book_url=book_url,
                 book_ISBN=book_ISBN,
@@ -290,18 +292,29 @@ def handle_dualsubmits_delete():
 
 
 @app.route("/add_favorite")
+@login_required
 def add_favorite():
     """Adds a valid book ISBN to the favorites list before redirecting the user to the original page from which a book was favorited."""
     original_route = flask.request.args.get("route")
     favorite_isbn = flask.request.args.get("isbn")
-    new_favorite = Favorites(userEmail=current_user.email, bookISBN=favorite_isbn)
-    db.session.add(new_favorite)
-    db.session.commit()
-    flask.flash("Book has been favorited.")
-    return flask.redirect(flask.url_for(original_route))
+    existing_favorite = Favorites.query.filter_by(
+        userEmail=current_user.email, bookISBN=favorite_isbn
+    ).first()
+
+    if existing_favorite:
+        flask.flash("THIS BOOK HAS BEEN FAVORITED ALREADY. PLEASE TRY AGAIN.")
+        return flask.redirect(flask.url_for(original_route))
+
+    else:
+        new_favorite = Favorites(userEmail=current_user.email, bookISBN=favorite_isbn)
+        db.session.add(new_favorite)
+        db.session.commit()
+        flask.flash("Book has been favorited.")
+        return flask.redirect(flask.url_for(original_route))
 
 
 @app.route("/delete_favorite")
+@login_required
 def delete_favorite():
     """If found, removes a book from the favorites list before returning the user back to the favorites page."""
     isbn = flask.request.args.get("isbn")
