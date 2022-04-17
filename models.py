@@ -7,7 +7,9 @@ from wtforms.validators import InputRequired, Length, ValidationError
 
 db = SQLAlchemy()
 
-
+# =====================================================================
+# SECTION 1: SIGN-UP/LOGIN FORMS
+# =====================================================================
 class SignupForm(FlaskForm):
     """Establishes the basic fields required for a sign-up form instance."""
 
@@ -17,12 +19,12 @@ class SignupForm(FlaskForm):
     )
 
     username = StringField(
-        validators=[InputRequired(), Length(min=1, max=15)],
+        validators=[InputRequired(), Length(min=1, max=40)],
         render_kw={"placeholder": "Username"},
     )
 
     password = PasswordField(
-        validators=[InputRequired(), Length(min=2, max=15)],
+        validators=[InputRequired(), Length(min=2, max=40)],
         render_kw={"placeholder": "Password"},
     )
 
@@ -54,19 +56,37 @@ class LoginForm(FlaskForm):
     submit = SubmitField("Login")
 
     password = PasswordField(
-        validators=[InputRequired(), Length(min=2, max=10)],
+        validators=[InputRequired(), Length(min=2, max=40)],
         render_kw={"placeholder": "Password"},
     )
 
 
-class SuggestionInfoForm(FlaskForm):
-    """Establishes the basic fields required for a form used to pull certain information for suggested or displayed books given an ISBN."""
+# =====================================================================
+# SECTION 2: FORMS USED FOR CRITICAL FUNCTIONS IN PRIMARY HTML PAGES
+# =====================================================================
+class BookInfoFormAdd(FlaskForm):
+    """Establishes the basic fields required for a form used to pull certain information about a displayed book or add a new favorite book, given an ISBN."""
+
+    original_route = StringField(render_kw={"readonly": True})
 
     isbn = StringField(
-        validators=[InputRequired(), Length(min=1, max=15)],
+        validators=[Length(min=1, max=15)],
         render_kw={"readonly": True},
     )
-    submit = SubmitField("Explore")
+    submit_explore = SubmitField(label="Explore")
+    submit_add_favorite = SubmitField(label="Favorite")
+
+
+class BookInfoFormDelete(FlaskForm):
+    """Establishes the basic fields required for a form used to pull certain information about a displayed book or delete a favorite book, given an ISBN."""
+
+    original_route = StringField(render_kw={"readonly": True})
+    isbn = StringField(
+        validators=[Length(min=1, max=15)],
+        render_kw={"readonly": True},
+    )
+    submit_explore = SubmitField(label="Explore")
+    submit_delete_favorite = SubmitField(label="Unfavorite")
 
 
 class BookThemeForm(FlaskForm):
@@ -77,56 +97,49 @@ class BookThemeForm(FlaskForm):
         "theme",
         choices=[
             ("Adventure", "Adventure"),
-            ("Humor", "Humor"),
-            ("Horror", "Horror"),
-            ("Fantasy", "Fantasy"),
-            ("Supernatural", "Supernatural"),
-            ("Media", "Media"),
-            ("Good vs. Evil", "Good vs. Evil"),
-            ("Determination", "Determination"),
-            ("Friendship", "Friendship"),
-            ("Science Fiction", "Science Fiction"),
             ("Animals", "Animals"),
-            ("Halloween", "Halloween"),
-            ("Classics", "Classics"),
-            ("Survival", "Survival"),
-            ("Coming of Age", "Coming of Age"),
-            ("War", "War"),
-            ("Love & Romance", "Love & Romance"),
-            ("Patriotism", "Patriotism"),
             ("Betrayal", "Betrayal"),
-            ("Geography", "Geography"),
-            ("Self-Discovery", "Self-Discovery"),
-            ("Science & Nature", "Science & Nature"),
-            ("Fairytales & Fables", "Fairytales & Fables"),
+            ("Classics", "Classics"),
+            ("Coming of Age", "Coming of Age"),
+            ("Determination", "Determination"),
+            ("Fairy Tales & Fables", "Fairy Tales & Fables"),
             ("Family & Relationships", "Family & Relationships"),
+            ("Fantasy", "Fantasy"),
+            ("Friendship", "Friendship"),
+            ("Geography", "Geography"),
+            ("Good vs. Evil", "Good vs. Evil"),
+            ("Halloween", "Halloween"),
+            ("Horror", "Horror"),
+            ("Humor", "Humor"),
+            ("Love & Romance", "Love & Romance"),
+            ("Media", "Media"),
+            ("Patriotism", "Patriotism"),
+            ("Science & Nature", "Science & Nature"),
+            ("Science Fiction", "Science Fiction"),
+            ("Self-Discovery", "Self-Discovery"),
+            ("Supernatural", "Supernatural"),
+            ("Survival", "Survival"),
+            ("War", "War"),
         ],
     )
     submit = SubmitField("Submit")
 
 
 class BookTitleForm(FlaskForm):
-    """Establishes the basic fields required for a form used to pull certain book information given a title."""
+    """Establishes the basic fields required for a form used to pull certain information about a book, given a title."""
 
     title = StringField(
-        validators=[InputRequired(), Length(min=1, max=20)],
+        validators=[InputRequired(), Length(min=1, max=40)],
         render_kw={"placeholder": "Title"},
     )
     submit = SubmitField("Submit")
 
 
-class FavoritesForm(FlaskForm):
-    """Establishes the basic fields required for a form used to add or delete a favorite book by ISBN."""
-
-    isbn = StringField(
-        validators=[InputRequired(), Length(min=1, max=15)],
-        render_kw={"placeholder": "isbn"},
-    )
-    submit = SubmitField("Submit")
-
-
+# =====================================================================
+# SECTION 3: FORMS WITH SINGLE-PURPOSE BUTTONS
+# =====================================================================
 class ReturnHomeButton(FlaskForm):
-    """Creates a form with a single button to send the user back to the homepage when clicked.."""
+    """Creates a form with a single button to send the user back to the homepage when clicked."""
 
     submit = SubmitField("Return home")
 
@@ -137,6 +150,9 @@ class LogoutButton(FlaskForm):
     submit = SubmitField("Logout")
 
 
+# =====================================================================
+# SECTION 4: DATABASE MODELS
+# =====================================================================
 class Users(db.Model, UserMixin):
     """Defines a "Users" table in the database with two basic attributes, an ID and the user's login email."""
 

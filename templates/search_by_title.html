@@ -9,8 +9,18 @@
         {{ return_home_button.csrf_token }}
         {{ return_home_button.submit }}
     </form>
+
     <h1>Provide the title! Suggestions will be Provided:</h1>
-    <!--Form to display themes as a dropdown will be shown here.-->
+
+    <!--Flashed messages will appear here.-->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <b>{{message}}</b>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <form method="POST" action="/handle_title_selection">
         {{ title_form.csrf_token }}
         {{ title_form.title }}
@@ -22,18 +32,14 @@
     {% endif %}
 
     {% if num_books is defined %}
-    <form method="POST" action="/add_favorite">
-        {{ favorites_form.csrf_token }}
-        {{ favorites_form.isbn }}
-        {{ favorites_form.submit }}
-    </form>
     <div>
         <p><b>Title: {{book_title}}</b></p>
-        <form action="/get_book_info" method="POST">
-            {{ suggestion_form.csrf_token }}
-            ISBN:
-            {{ suggestion_form.isbn(value=book_ISBN) }}
-            {{ suggestion_form.submit }}
+        <form action="/handle_dualsubmits_add" method="POST">
+            {{ bookinfo_form_a.csrf_token }}
+            {{ bookinfo_form_a.original_route(value=route_name, type="hidden") }}
+            {{ bookinfo_form_a.isbn(value=book_ISBN, type="hidden") }}
+            {{ bookinfo_form_a.submit_explore }}
+            {{ bookinfo_form_a.submit_add_favorite}}
         </form>
         <img src="{{book_url}}" />
     </div>

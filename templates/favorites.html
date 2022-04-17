@@ -10,26 +10,32 @@
         {{ return_home_button.csrf_token }}
         {{ return_home_button.submit }}
     </form>
+
     <div class=center-text>
         <h1>Your Favorites:</h1>
-        <p>Type an ISBN number below to remove any favorites!</p>
-        <form method="POST" action="/delete_favorite">
-            {{ favorites_form.csrf_token }}
-            {{ favorites_form.isbn }}
-            {{ favorites_form.submit }}
-        </form>
     </div>
+
+    <!--Flashed messages will appear here.-->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <b>{{message}}</b>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     {% if num_books is defined %}
     {% for index in range(num_books) %}
     <div>
-        <img src="{{book_urls[index]}}" />
         <p><b>Title: {{book_titles[index]}}</b></p>
-        <form action="/get_book_info" method="POST">
-            {{ suggestion_form.csrf_token }}
-            ISBN:
-            {{ suggestion_form.isbn(value=book_ISBNs[index]) }}
-            {{ suggestion_form.submit }}
+        <form action="/handle_dualsubmits_delete" method="POST">
+            {{ bookinfo_form_d.csrf_token }}
+            {{ bookinfo_form_d.original_route(value=route_name, type="hidden") }}
+            {{ bookinfo_form_d.isbn(value=book_ISBNs[index], type="hidden") }}
+            {{ bookinfo_form_d.submit_explore }}
+            {{ bookinfo_form_d.submit_delete_favorite }}
         </form>
+        <img src="{{book_urls[index]}}" />
     </div>
     {% endfor %}
     {% endif %}

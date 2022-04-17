@@ -69,35 +69,35 @@ def title_search(title):
 
     # "start", "max", and "expandlevel" are required parameters.
     BASE_URL = "https://reststop.randomhouse.com/resources/titles"
-    query_params = {"start": 0, "max": 1, "expandlevel": 1, "search": str(title)}
+    query_params = {"start": 0, "max": 25, "expandlevel": 1, "search": str(title)}
 
     response = requests.get(
         BASE_URL, params=query_params, headers={"Accept": "application/json"}
     )
     response_json = response.json()
+    book_index = int(random.randint(0, len(response_json["title"]) - 1))
 
-    book_ISBN = response_json["title"]["isbn"]
+    book_ISBN = response_json["title"][book_index]["isbn"]
     return book_ISBN
 
 
 def basic_book_info(isbn):
-    """Grabs the titles and book cover URLs of a set of books using the provided ISBN number."""
+    """Grabs the title and book cover URL of a single book using the provided ISBN number."""
     isbn = str(isbn)
     try:
         BASE_URL = "https://reststop.randomhouse.com/resources/titles/"
         book_titles = []
         book_urls = []
-        for index in range(len(isbn)):
-            url = BASE_URL + isbn
-            response = requests.get(url, headers={"Accept": "application/json"})
-            response_json = response.json()
+        url = BASE_URL + isbn
+        response = requests.get(url, headers={"Accept": "application/json"})
+        response_json = response.json()
 
-            book_title = response_json["titleweb"]
-            book_cover = response_json["@uri"]
+        book_title = response_json["titleweb"]
+        book_cover = response_json["@uri"]
 
-            book_titles.append(book_title)
-            book_urls.append(book_cover)
-            return (book_title, book_cover)
+        book_titles.append(book_title)
+        book_urls.append(book_cover)
+        return (book_title, book_cover)
     except:
         sample_title = [""]
         sample_book_url = [""]
@@ -105,7 +105,7 @@ def basic_book_info(isbn):
 
 
 def all_book_info(isbn):
-    """Get all the information about the book using the provided ISBN number."""
+    """Grabs all the information about a single book using the provided ISBN number."""
     isbn = str(isbn)
     try:
         BASE_URL = "https://reststop.randomhouse.com/resources/titles/"
