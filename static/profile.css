@@ -1,0 +1,24 @@
+body {
+    background-image:url(https://media.istockphoto.com/photos/medium-golden-brown-wood-texture-background-picture-id513694258?k=20&m=513694258&s=170667a&w=0&h=1MRpB5RJmf5ZNa_ap2jr80Udoqcla6EkbG6eMzZ6Z1k=);
+}
+
+.content-section {
+
+    
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .profile {
+      text-align: center;
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace;
+  }

@@ -2,6 +2,7 @@
 import os
 import flask
 import bcrypt
+from flask import flash, request, render_template
 from dotenv import find_dotenv, load_dotenv
 from flask_bcrypt import Bcrypt
 from flask_wtf.csrf import CSRFProtect
@@ -18,6 +19,7 @@ from models import (
     db,
     SignupForm,
     LoginForm,
+    UserForm,
     SuggestionInfoForm,
     BookThemeForm,
     BookTitleForm,
@@ -299,6 +301,36 @@ def get_book_info():
         book_title=book_title,
     )
 
+@app.route('/profile', methods=["GET", "POST"])
+@login_required
+def profile():
+        form = UserForm()
+        id = current_user.id
+        name_to_update = Users.query.get_or_404(id)
+        if request.method == "POST":
+            
+            name_to_update.email = request.form['email']
+            
+            name_to_update.username = request.form['username']
+            try:
+                db.session.commit()
+                flash("User Updated Successfully!")
+                return render_template("profile.html", 
+                    form=form,
+                    name_to_update = name_to_update, id=id)
+            except:
+                flash("Error!  Looks like there was a problem...try again!")
+                return render_template("profile.html", 
+                    form=form,
+                    name_to_update = name_to_update,
+                    id=id)
+        else:
+            return render_template("profile.html", 
+                    form=form,
+                    name_to_update = name_to_update,
+                    id = id)
+
+    
 
 app.register_blueprint(bp)
 app.run(host=os.getenv("IP", "0.0.0.0"), port=int(os.getenv("PORT", 8080)), debug=True)

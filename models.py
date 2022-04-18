@@ -58,6 +58,14 @@ class LoginForm(FlaskForm):
         render_kw={"placeholder": "Password"},
     )
 
+class UserForm(FlaskForm):
+	username = StringField("Username", validators=[InputRequired()])
+	email = StringField("Email", validators=[InputRequired()])
+
+	submit = SubmitField("Update")
+
+
+
 
 class SuggestionInfoForm(FlaskForm):
     """Establishes the basic fields required for a form used to pull certain information for suggested or displayed books given an ISBN."""
