@@ -1,0 +1,24 @@
+body {
+    background-image: url("/static/background.jpg");
+}
+
+.content-section {
+
+    
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace;
+  }
+  
+  .profile {
+      text-align: center;
+    background: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', Courier, monospace;
+  }

@@ -60,6 +60,14 @@ class LoginForm(FlaskForm):
         render_kw={"placeholder": "Password"},
     )
 
+class UserForm(FlaskForm):
+	username = StringField("Username", validators=[InputRequired()])
+	email = StringField("Email", validators=[InputRequired()])
+
+	submit = SubmitField("Update")
+
+
+
 
 # =====================================================================
 # SECTION 2: FORMS USED FOR CRITICAL FUNCTIONS IN PRIMARY HTML PAGES
