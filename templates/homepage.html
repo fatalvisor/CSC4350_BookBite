@@ -10,15 +10,16 @@
         {{ logout_button.csrf_token }}
         {{ logout_button.submit }}
     </form> <br>
-    
+
     <a href="{{url_for('profile')}}">Profile</a>
-      <br>
+    <br>
 
     <h1 id="primary_header">Welcome to the main page. What would you like to do?</h1>
     <p id="main_content_1">
         <a class="options" href="{{url_for('suggestions')}}"><b>Looking for suggestions?</b></a><br><br>
         <a class="options" href="{{url_for('search_by_title')}}"><b>Search for Books by Title!</b></a><br><br>
-        <a class="options" href="{{url_for('favorites')}}"><b>See your favorites!</b></a>
+        <a class="options" href="{{url_for('favorites')}}"><b>See your favorites!</b></a><br><br>
+        <a class="options" href="{{url_for('recommendations')}}"><b>See your recommendations!</b></a>
     </p>
 </body>
 

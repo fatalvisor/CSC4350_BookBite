@@ -60,13 +60,12 @@ class LoginForm(FlaskForm):
         render_kw={"placeholder": "Password"},
     )
 
+
 class UserForm(FlaskForm):
-	username = StringField("Username", validators=[InputRequired()])
-	email = StringField("Email", validators=[InputRequired()])
+    username = StringField("Username", validators=[InputRequired()])
+    email = StringField("Email", validators=[InputRequired()])
 
-	submit = SubmitField("Update")
-
-
+    submit = SubmitField("Update")
 
 
 # =====================================================================
@@ -175,6 +174,18 @@ class Favorites(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     userEmail = db.Column(db.String(100), nullable=False)
+    bookISBN = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return "<Favorites %r>" % self.bookISBN
+
+
+class Recommendations(db.Model):
+    """Defines a "Recommendations" table in the database with three basic attributes: an ID, the user's email, and the ISBN of the favorited book."""
+
+    id = db.Column(db.Integer, primary_key=True)
+    userEmail = db.Column(db.String(100), nullable=False)
+    senderEmail = db.Column(db.String(100), nullable=False)
     bookISBN = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
