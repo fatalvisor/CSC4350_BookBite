@@ -26,6 +26,7 @@ from models import (
     BookTitleForm,
     Users,
     Favorites,
+    Recommendations,
 )
 from penguin import book_suggestions, title_search, all_book_info, basic_book_info
 
@@ -238,6 +239,104 @@ def handle_title_selection():
             )
 
 
+@app.route("/recommendations")
+@login_required
+def recommendations():
+    """Displays the current user's favorited books on the 'recommendations' page."""
+    bookinfo_form_d = BookInfoFormDelete()
+    return_home_button = ReturnHomeButton()
+    all_recommendations = Recommendations.query.filter_by(
+        userEmail=current_user.email
+    ).all()
+
+    num_books = len(all_recommendations)
+    book_titles = []
+    book_urls = []
+    all_recommendations_isbns = []
+
+    for i in range(num_books):
+        book_title, book_url = basic_book_info(all_recommendations[i].bookISBN)
+        book_titles.append(book_title)
+        book_urls.append(book_url)
+        all_recommendations_isbns.append(all_recommendations[i].bookISBN)
+
+    if num_books == 0:
+        return flask.render_template(
+            "no_recommendations.html",
+            return_home_button=return_home_button,
+        )
+    else:
+        return flask.render_template(
+            "recommendations.html",
+            bookinfo_form_d=bookinfo_form_d,
+            return_home_button=return_home_button,
+            book_titles=book_titles,
+            book_urls=book_urls,
+            book_ISBNs=all_recommendations_isbns,
+            num_books=num_books,
+        )
+
+
+@app.route("/handle_dualsubmits_recommendations_delete", methods=["POST"])
+@login_required
+def handle_dualsubmits_recommendations_delete():
+    """Based on whether the user wants to explore a book or unfavorite a book, redirect to proper routes accordingly."""
+    bookinfo_form_d = BookInfoFormAdd()
+    if bookinfo_form_d.validate_on_submit():
+        if bookinfo_form_d.submit_explore.data is True:
+            return flask.redirect(
+                flask.url_for("get_book_info", isbn=bookinfo_form_d.isbn.data)
+            )
+        else:
+            return flask.redirect(
+                flask.url_for(
+                    "delete_recommendations",
+                    isbn=bookinfo_form_d.isbn.data,
+                )
+            )
+
+
+@app.route("/delete_recommendations")
+@login_required
+def delete_recommendations():
+    """If found, removes a book from the recommendations list before returning the user back to the favorites page."""
+    isbn = flask.request.args.get("isbn")
+    deleted_book = Recommendations.query.filter_by(
+        userEmail=current_user.email, bookISBN=isbn
+    ).first()
+    db.session.delete(deleted_book)
+    db.session.commit()
+    flask.flash("Book has been un-recommended.")
+    return flask.redirect(flask.url_for("recommendations"))
+
+
+@app.route("/add_recommendations")
+@login_required
+def add_recommendations():
+    """Adds a valid book ISBN to the favorites list before redirecting the user to the original page from which a book was recommended."""
+    bookISBN = flask.form.get("isbn")
+    emailReceiver = flask.request.args.get("userEmail")
+    existing_recommendation = Recommendations.query.filter_by(
+        userEmail=emailReceiver, senderEmail=current_user.email, bookISBN=bookISBN
+    ).first()
+
+    if existing_recommendation:
+        flask.flash(
+            "THIS BOOK HAS BEEN RECOMMENDED TO THIS PERSON ALREADY. PLEASE TRY AGAIN."
+        )
+
+    else:
+        new_recommendation = Recommendations(
+            userEmail=emailReceiver,
+            senderEmail=current_user.email,
+            bookISBN=bookISBN,
+        )
+        db.session.add(new_recommendation)
+        db.session.commit()
+        flask.flash("Book has been recommended.")
+        # return flask.redirect(flask.url_for(original_route))
+
+
 @app.route("/favorites")
 @login_required
 def favorites():
@@ -357,36 +456,34 @@ def get_book_info():
         book_title=book_title,
     )
 
-@app.route('/profile', methods=["GET", "POST"])
+
+@app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-        form = UserForm()
-        id = current_user.id
-        name_to_update = Users.query.get_or_404(id)
-        if request.method == "POST":
-            
-            name_to_update.email = request.form['email']
-            
-            name_to_update.username = request.form['username']
-            try:
-                db.session.commit()
-                flash("User Updated Successfully!")
-                return render_template("profile.html", 
-                    form=form,
-                    name_to_update = name_to_update, id=id)
-            except:
-                flash("Error!  Looks like there was a problem...try again!")
-                return render_template("profile.html", 
-                    form=form,
-                    name_to_update = name_to_update,
-                    id=id)
-        else:
-            return render_template("profile.html", 
-                    form=form,
-                    name_to_update = name_to_update,
-                    id = id)
+    form = UserForm()
+    id = current_user.id
+    name_to_update = Users.query.get_or_404(id)
+    if request.method == "POST":
 
-    
+        name_to_update.email = request.form["email"]
+
+        name_to_update.username = request.form["username"]
+        try:
+            db.session.commit()
+            flash("User Updated Successfully!")
+            return render_template(
+                "profile.html", form=form, name_to_update=name_to_update, id=id
+            )
+        except:
+            flash("Error!  Looks like there was a problem...try again!")
+            return render_template(
+                "profile.html", form=form, name_to_update=name_to_update, id=id
+            )
+    else:
+        return render_template(
+            "profile.html", form=form, name_to_update=name_to_update, id=id
+        )
+
 
 app.register_blueprint(bp)
 app.run(host=os.getenv("IP", "0.0.0.0"), port=int(os.getenv("PORT", 8080)), debug=True)
