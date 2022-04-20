@@ -137,6 +137,7 @@ def logout():
 @login_required
 def profile():
     """Provides the current user with the ability to update their username, email, and password."""
+    return_home_button = ReturnHomeButton()
     form = UserForm()
     id = current_user.id
     name_to_update = Users.query.get_or_404(id)
@@ -149,16 +150,28 @@ def profile():
             db.session.commit()
             flash("User Updated Successfully!")
             return render_template(
-                "profile.html", form=form, name_to_update=name_to_update, id=id
+                "profile.html",
+                form=form,
+                name_to_update=name_to_update,
+                id=id,
+                return_home_button=return_home_button,
             )
         except:
             flash("Error!  Looks like there was a problem...try again!")
             return render_template(
-                "profile.html", form=form, name_to_update=name_to_update, id=id
+                "profile.html",
+                form=form,
+                name_to_update=name_to_update,
+                id=id,
+                return_home_button=return_home_button,
             )
     else:
         return render_template(
-            "profile.html", form=form, name_to_update=name_to_update, id=id
+            "profile.html",
+            form=form,
+            name_to_update=name_to_update,
+            id=id,
+            return_home_button=return_home_button,
         )
 
 
