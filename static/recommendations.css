@@ -7,28 +7,18 @@ body {
 }
 
 
-.center {
-    display: block;
-    margin-left: 90px;
-    margin-right: auto;
-    /*this is used to center the pictures, I think I may have to change the width thing tho 
-    because I think that is based upon original image width and will change from book to book. */
-    width: 50%;
+.center-image {
+    display: inline-block;
 }
 
 
-.main-grid {
+.grid-column {
     display: grid;
-    grid-gap: 50px;
-    grid-template-columns: 33% 33% 33%;
+    grid-template-columns: 33% 30% 30%;
+    padding: 10px;
+    gap: 30px;
 }
 
-.data-grid {
-    display: grid;
-    padding-left: 65px;
-    grid-gap: 5px;
-    grid-template-columns: 40% 40%;
-}
 
 .verticle-center {
     padding: 250px 0;
