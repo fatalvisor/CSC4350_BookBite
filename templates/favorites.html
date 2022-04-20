@@ -23,22 +23,28 @@
     {% endwith %}
 
     {% if num_books is defined %}
-    {% for index in range(num_books) %}
-    <div>
-        <p><b>Title: {{book_titles[index]}}</b></p>
-        <form action="/handle_triple_submits" method="POST">
-            {{ bookinfo_form_srecs.csrf_token }}
-            {{ bookinfo_form_srecs.isbn(value=book_ISBNs[index], type="hidden") }}
-            {{ bookinfo_form_srecs.receiver_username }}
-            {{ bookinfo_form_srecs.submit_recommend }}<br>
-
-            <img src="{{book_urls[index]}}" /><br>
-
-            {{ bookinfo_form_srecs.submit_explore }}
-            {{ bookinfo_form_srecs.submit_delete }}
-        </form>
+    <div class="grid-column">
+        {% for index in range(num_books) %}
+        <div>
+            <div class="center-text">
+                <p><b>Title: {{book_titles[index]}}</b></p>
+                <div class="center-image">
+                    <form action="/handle_triple_submits" method="POST">
+                        {{ bookinfo_form_srecs.csrf_token }}
+                        {{ bookinfo_form_srecs.isbn(value=book_ISBNs[index], type="hidden") }}
+                        {{ bookinfo_form_srecs.receiver_username }}
+                        {{ bookinfo_form_srecs.submit_recommend }}<br>
+                        <br>
+                        <img src="{{book_urls[index]}}" /><br>
+                        <br>
+                        {{ bookinfo_form_srecs.submit_explore }}
+                        {{ bookinfo_form_srecs.submit_delete }}
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
     {% endif %}
 
 </body>
