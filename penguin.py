@@ -20,12 +20,12 @@ def get_themes(themes):
     return "None"
 
 
-def book_suggestions(theme):
+def book_suggestions(theme, display_number):
     """Finds and returns the titles and cover image URLs of randomly selected books falling under a certain theme."""
     try:
         # "start", "max", and "expandlevel" are required parameters.
         BASE_URL = "https://reststop.randomhouse.com/resources/titles"
-        query_params = {"start": 0, "max": 100, "expandlevel": 1, "theme": str(theme)}
+        query_params = {"start": 0, "max": 40, "expandlevel": 1, "theme": str(theme)}
 
         response = requests.get(
             BASE_URL, params=query_params, headers={"Accept": "application/json"}
@@ -38,11 +38,11 @@ def book_suggestions(theme):
         already_selected_books = []
 
         # Chooses a random set of 6 books under a chosen theme. Already selected books are not chosen twice.
-        for index in range(6):
+        for index in range(display_number):
             response_json = response.json()
-            book_selection = int(random.randint(0, 99))
+            book_selection = int(random.randint(0, 39))
             while book_selection in already_selected_books:
-                book_selection = int(random.randint(0, 99))
+                book_selection = int(random.randint(0, 39))
 
             book_title = response_json["title"][book_selection]["titleweb"]
             book_url = BASE_URL + "/" + response_json["title"][book_selection]["isbn"]
@@ -160,3 +160,24 @@ def all_book_info(isbn):
             book_cover,
             book_title,
         )
+
+
+def get_single_book_theme(isbn):
+    """Grabs all the information about a single book using the provided ISBN number."""
+    isbn = str(isbn)
+    try:
+        BASE_URL = "https://reststop.randomhouse.com/resources/titles/"
+        url = BASE_URL + isbn
+        response = requests.get(url, headers={"Accept": "application/json"})
+        response_json = response.json()
+
+        try:
+            book_theme = response_json["themes"]["theme"]
+            single_theme = book_theme[0]
+            return single_theme
+        except:
+            book_theme = response_json["themes"]["theme"]
+            return book_theme
+    except:
+        book_theme = "None"
+        return book_theme
