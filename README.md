@@ -1,5 +1,5 @@
 The URL for the Heroku app (Version 1) is: https://aqueous-castle-25369.herokuapp.com/ \
-The URL for the Heroku app (Version 2) is: https://salty-retreat-12345.herokuapp.com/
+The URL for the Heroku app (Version 2) is: https://blooming-mountain-54310.herokuapp.com/
 
 # Welcome to Book Bite
 
