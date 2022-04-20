@@ -21,7 +21,8 @@ from models import (
     LoginForm,
     UserForm,
     BookInfoFormAdd,
-    BookInfoFormDelete,
+    BookInfoFormSendRecs,
+    BookInfoFormDeleteRecs,
     BookThemeForm,
     BookTitleForm,
     Users,
@@ -51,6 +52,7 @@ bp = flask.Blueprint(
 
 db.init_app(app)
 with app.app_context():
+    # db.drop_all()
     db.create_all()
     login_manager = LoginManager()
     login_manager.login_view = "login"
@@ -63,7 +65,7 @@ with app.app_context():
 
 
 # =====================================================================
-# SECTION 1: SIGN-UP/LOGIN ROUTES
+# SECTION 1: SIGN-UP/LOGIN INFORMATION ROUTES
 # =====================================================================
 @app.route("/", methods=["GET"])
 def signup():
@@ -87,6 +89,7 @@ def signup_post():
         db.session.add(new_user)
         db.session.commit()
 
+        flask.flash("New user successfully registered.")
         return flask.redirect(flask.url_for("login"))
 
     flask.flash("USER ALREADY EXISTS. PLEASE TRY AGAIN.")
@@ -121,6 +124,34 @@ def logout():
     """Clears the current user's session cookies and redirects you back to the login page."""
     logout_user()
     return flask.redirect(flask.url_for("login"))
+
+
+@app.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    form = UserForm()
+    id = current_user.id
+    name_to_update = Users.query.get_or_404(id)
+    if request.method == "POST":
+
+        name_to_update.email = request.form["email"]
+
+        name_to_update.username = request.form["username"]
+        try:
+            db.session.commit()
+            flash("User Updated Successfully!")
+            return render_template(
+                "profile.html", form=form, name_to_update=name_to_update, id=id
+            )
+        except:
+            flash("Error!  Looks like there was a problem...try again!")
+            return render_template(
+                "profile.html", form=form, name_to_update=name_to_update, id=id
+            )
+    else:
+        return render_template(
+            "profile.html", form=form, name_to_update=name_to_update, id=id
+        )
 
 
 # =====================================================================
@@ -173,26 +204,6 @@ def handle_theme_suggestions():
         )
 
 
-@app.route("/handle_dualsubmits_add", methods=["POST"])
-@login_required
-def handle_dualsubmits_add():
-    """Based on whether the user wants to explore a book or favorite a book, redirect to proper routes accordingly."""
-    bookinfo_form_a = BookInfoFormAdd()
-    if bookinfo_form_a.validate_on_submit():
-        if bookinfo_form_a.submit_explore.data is True:
-            return flask.redirect(
-                flask.url_for("get_book_info", isbn=bookinfo_form_a.isbn.data)
-            )
-        else:
-            return flask.redirect(
-                flask.url_for(
-                    "add_favorite",
-                    route=bookinfo_form_a.original_route.data,
-                    isbn=bookinfo_form_a.isbn.data,
-                )
-            )
-
-
 @app.route("/search_by_title")
 @login_required
 def search_by_title():
@@ -239,25 +250,174 @@ def handle_title_selection():
             )
 
 
+@app.route("/favorites")
+@login_required
+def favorites():
+    """Displays the current user's favorited books on the 'favorites' page."""
+    return_home_button = ReturnHomeButton()
+    bookinfo_form_srecs = BookInfoFormSendRecs()
+    all_favorites = Favorites.query.filter_by(email=current_user.email).all()
+
+    num_books = len(all_favorites)
+    book_titles = []
+    book_urls = []
+    all_favorite_isbns = []
+
+    for i in range(num_books):
+        book_title, book_url = basic_book_info(all_favorites[i].bookISBN)
+        book_titles.append(book_title)
+        book_urls.append(book_url)
+        all_favorite_isbns.append(all_favorites[i].bookISBN)
+
+    if num_books == 0:
+        return flask.render_template(
+            "no_favorites.html",
+            return_home_button=return_home_button,
+        )
+    else:
+        return flask.render_template(
+            "favorites.html",
+            return_home_button=return_home_button,
+            bookinfo_form_srecs=bookinfo_form_srecs,
+            book_titles=book_titles,
+            book_urls=book_urls,
+            book_ISBNs=all_favorite_isbns,
+            num_books=num_books,
+        )
+
+
+@app.route("/handle_dualsubmits_add", methods=["POST"])
+@login_required
+def handle_dualsubmits_add():
+    """Based on whether the user wants to explore a book or favorite a book, redirect to proper routes accordingly."""
+    bookinfo_form_a = BookInfoFormAdd()
+    if bookinfo_form_a.validate_on_submit():
+        if bookinfo_form_a.submit_explore.data is True:
+            return flask.redirect(
+                flask.url_for("get_book_info", isbn=bookinfo_form_a.isbn.data)
+            )
+        else:
+            return flask.redirect(
+                flask.url_for(
+                    "add_favorite",
+                    route=bookinfo_form_a.original_route.data,
+                    isbn=bookinfo_form_a.isbn.data,
+                )
+            )
+
+
+@app.route("/handle_triple_submits", methods=["POST"])
+@login_required
+def handle_triple_submits():
+    """Based on whether the user wants to explore a book or unfavorite a book, redirect to proper routes accordingly."""
+    bookinfo_form_srecs = BookInfoFormSendRecs()
+    if bookinfo_form_srecs.validate_on_submit():
+        if bookinfo_form_srecs.submit_explore.data is True:
+            return flask.redirect(
+                flask.url_for("get_book_info", isbn=bookinfo_form_srecs.isbn.data)
+            )
+        elif bookinfo_form_srecs.submit_delete.data is True:
+            return flask.redirect(
+                flask.url_for(
+                    "delete_favorite",
+                    isbn=bookinfo_form_srecs.isbn.data,
+                )
+            )
+        else:
+            return flask.redirect(
+                flask.url_for(
+                    "add_recommendations",
+                    isbn=bookinfo_form_srecs.isbn.data,
+                    receiver_username=bookinfo_form_srecs.receiver_username.data,
+                )
+            )
+
+
+@app.route("/handle_triplesubmits_recdelete", methods=["POST"])
+@login_required
+def handle_triplesubmits_recdelete():
+    """Based on whether the user wants to explore a book or unfavorite a book, redirect to proper routes accordingly."""
+    bookinfo_form_drecs = BookInfoFormDeleteRecs()
+    if bookinfo_form_drecs.validate_on_submit():
+        if bookinfo_form_drecs.submit_explore.data is True:
+            return flask.redirect(
+                flask.url_for("get_book_info", isbn=bookinfo_form_drecs.isbn.data)
+            )
+        elif bookinfo_form_drecs.submit_favorite.data is True:
+            return flask.redirect(
+                flask.url_for(
+                    "add_favorite",
+                    isbn=bookinfo_form_drecs.isbn.data,
+                    route="recommendations",
+                )
+            )
+        else:
+            return flask.redirect(
+                flask.url_for(
+                    "delete_recommendations",
+                    isbn=bookinfo_form_drecs.isbn.data,
+                    receiver_username=bookinfo_form_drecs.receiver_username.data,
+                )
+            )
+
+
+@app.route("/add_favorite")
+@login_required
+def add_favorite():
+    """Adds a valid book ISBN to the favorites list before redirecting the user to the original page from which a book was favorited."""
+    original_route = flask.request.args.get("route")
+    favorite_isbn = flask.request.args.get("isbn")
+    existing_favorite = Favorites.query.filter_by(
+        email=current_user.email, bookISBN=favorite_isbn
+    ).first()
+
+    if existing_favorite:
+        flask.flash("THIS BOOK HAS BEEN FAVORITED ALREADY. PLEASE TRY AGAIN.")
+        return flask.redirect(flask.url_for(original_route))
+
+    else:
+        new_favorite = Favorites(email=current_user.email, bookISBN=favorite_isbn)
+        db.session.add(new_favorite)
+        db.session.commit()
+        flask.flash("Book has been favorited.")
+        return flask.redirect(flask.url_for(original_route))
+
+
+@app.route("/delete_favorite")
+@login_required
+def delete_favorite():
+    """If found, removes a book from the favorites list before returning the user back to the favorites page."""
+    isbn = flask.request.args.get("isbn")
+    deleted_book = Favorites.query.filter_by(
+        email=current_user.email, bookISBN=isbn
+    ).first()
+    db.session.delete(deleted_book)
+    db.session.commit()
+    flask.flash("Book has been unfavorited.")
+    return flask.redirect(flask.url_for("favorites"))
+
+
 @app.route("/recommendations")
 @login_required
 def recommendations():
     """Displays the current user's favorited books on the 'recommendations' page."""
-    bookinfo_form_d = BookInfoFormDelete()
     return_home_button = ReturnHomeButton()
+    bookinfo_form_drecs = BookInfoFormDeleteRecs()
     all_recommendations = Recommendations.query.filter_by(
-        userEmail=current_user.email
+        receiverUsername=current_user.username
     ).all()
 
     num_books = len(all_recommendations)
     book_titles = []
     book_urls = []
     all_recommendations_isbns = []
+    recommendation_senders = []
 
     for i in range(num_books):
         book_title, book_url = basic_book_info(all_recommendations[i].bookISBN)
         book_titles.append(book_title)
         book_urls.append(book_url)
+        recommendation_senders.append(all_recommendations[i].senderUsername)
         all_recommendations_isbns.append(all_recommendations[i].bookISBN)
 
     if num_books == 0:
@@ -268,11 +428,12 @@ def recommendations():
     else:
         return flask.render_template(
             "recommendations.html",
-            bookinfo_form_d=bookinfo_form_d,
             return_home_button=return_home_button,
+            bookinfo_form_drecs=bookinfo_form_drecs,
             book_titles=book_titles,
             book_urls=book_urls,
             book_ISBNs=all_recommendations_isbns,
+            recommendation_senders=recommendation_senders,
             num_books=num_books,
         )
 
@@ -296,136 +457,58 @@ def handle_dualsubmits_recommendations_delete():
             )
 
 
+@app.route("/add_recommendations")
+@login_required
+def add_recommendations():
+    """Adds a valid book ISBN to the favorites list before redirecting the user to the original page from which a book was recommended."""
+    isbn = flask.request.args.get("isbn")
+    receiver_username = flask.request.args.get("receiver_username")
+    if receiver_username == "":
+        flask.flash("A USERNAME MUST BE INPUTTED.")
+        return flask.redirect(flask.url_for("favorites"))
+    elif receiver_username == current_user.username:
+        flask.flash("YOU CANNOT RECOMMEND BOOKS TO YOURSELF. TRY AGAIN.")
+        return flask.redirect(flask.url_for("favorites"))
+
+    existing_recommendation = Recommendations.query.filter_by(
+        senderUsername=current_user.username,
+        receiverUsername=receiver_username,
+        bookISBN=isbn,
+    ).first()
+    user_exists = Users.query.filter_by(username=receiver_username).first()
+
+    if existing_recommendation:
+        flask.flash(
+            "THIS BOOK HAS BEEN RECOMMENDED TO THIS PERSON ALREADY. PLEASE TRY AGAIN."
+        )
+        return flask.redirect(flask.url_for("favorites"))
+    elif not user_exists:
+        flask.flash("THIS USER DOES NOT EXIST. TRY AGAIN.")
+        return flask.redirect(flask.url_for("favorites"))
+    else:
+        new_recommendation = Recommendations(
+            senderUsername=current_user.username,
+            receiverUsername=receiver_username,
+            bookISBN=isbn,
+        )
+        db.session.add(new_recommendation)
+        db.session.commit()
+        flask.flash("Book has been recommended.")
+        return flask.redirect(flask.url_for("favorites"))
+
+
 @app.route("/delete_recommendations")
 @login_required
 def delete_recommendations():
     """If found, removes a book from the recommendations list before returning the user back to the favorites page."""
     isbn = flask.request.args.get("isbn")
     deleted_book = Recommendations.query.filter_by(
-        userEmail=current_user.email, bookISBN=isbn
+        receiverUsername=current_user.username, bookISBN=isbn
     ).first()
     db.session.delete(deleted_book)
     db.session.commit()
     flask.flash("Book has been un-recommended.")
     return flask.redirect(flask.url_for("recommendations"))
-
-
-@app.route("/add_recommendations")
-@login_required
-def add_recommendations():
-    """Adds a valid book ISBN to the favorites list before redirecting the user to the original page from which a book was recommended."""
-    bookISBN = flask.form.get("isbn")
-    emailReceiver = flask.request.args.get("userEmail")
-    existing_recommendation = Recommendations.query.filter_by(
-        userEmail=emailReceiver, senderEmail=current_user.email, bookISBN=bookISBN
-    ).first()
-
-    if existing_recommendation:
-        flask.flash(
-            "THIS BOOK HAS BEEN RECOMMENDED TO THIS PERSON ALREADY. PLEASE TRY AGAIN."
-        )
-
-    else:
-        new_recommendation = Recommendations(
-            userEmail=emailReceiver,
-            senderEmail=current_user.email,
-            bookISBN=bookISBN,
-        )
-        db.session.add(new_recommendation)
-        db.session.commit()
-        flask.flash("Book has been recommended.")
-        # return flask.redirect(flask.url_for(original_route))
-
-
-@app.route("/favorites")
-@login_required
-def favorites():
-    """Displays the current user's favorited books on the 'favorites' page."""
-    bookinfo_form_d = BookInfoFormDelete()
-    return_home_button = ReturnHomeButton()
-    all_favorites = Favorites.query.filter_by(userEmail=current_user.email).all()
-
-    num_books = len(all_favorites)
-    book_titles = []
-    book_urls = []
-    all_favorite_isbns = []
-
-    for i in range(num_books):
-        book_title, book_url = basic_book_info(all_favorites[i].bookISBN)
-        book_titles.append(book_title)
-        book_urls.append(book_url)
-        all_favorite_isbns.append(all_favorites[i].bookISBN)
-
-    if num_books == 0:
-        return flask.render_template(
-            "no_favorites.html",
-            return_home_button=return_home_button,
-        )
-    else:
-        return flask.render_template(
-            "favorites.html",
-            bookinfo_form_d=bookinfo_form_d,
-            return_home_button=return_home_button,
-            book_titles=book_titles,
-            book_urls=book_urls,
-            book_ISBNs=all_favorite_isbns,
-            num_books=num_books,
-        )
-
-
-@app.route("/handle_dualsubmits_delete", methods=["POST"])
-@login_required
-def handle_dualsubmits_delete():
-    """Based on whether the user wants to explore a book or unfavorite a book, redirect to proper routes accordingly."""
-    bookinfo_form_d = BookInfoFormAdd()
-    if bookinfo_form_d.validate_on_submit():
-        if bookinfo_form_d.submit_explore.data is True:
-            return flask.redirect(
-                flask.url_for("get_book_info", isbn=bookinfo_form_d.isbn.data)
-            )
-        else:
-            return flask.redirect(
-                flask.url_for(
-                    "delete_favorite",
-                    isbn=bookinfo_form_d.isbn.data,
-                )
-            )
-
-
-@app.route("/add_favorite")
-@login_required
-def add_favorite():
-    """Adds a valid book ISBN to the favorites list before redirecting the user to the original page from which a book was favorited."""
-    original_route = flask.request.args.get("route")
-    favorite_isbn = flask.request.args.get("isbn")
-    existing_favorite = Favorites.query.filter_by(
-        userEmail=current_user.email, bookISBN=favorite_isbn
-    ).first()
-
-    if existing_favorite:
-        flask.flash("THIS BOOK HAS BEEN FAVORITED ALREADY. PLEASE TRY AGAIN.")
-        return flask.redirect(flask.url_for(original_route))
-
-    else:
-        new_favorite = Favorites(userEmail=current_user.email, bookISBN=favorite_isbn)
-        db.session.add(new_favorite)
-        db.session.commit()
-        flask.flash("Book has been favorited.")
-        return flask.redirect(flask.url_for(original_route))
-
-
-@app.route("/delete_favorite")
-@login_required
-def delete_favorite():
-    """If found, removes a book from the favorites list before returning the user back to the favorites page."""
-    isbn = flask.request.args.get("isbn")
-    deleted_book = Favorites.query.filter_by(
-        userEmail=current_user.email, bookISBN=isbn
-    ).first()
-    db.session.delete(deleted_book)
-    db.session.commit()
-    flask.flash("Book has been unfavorited.")
-    return flask.redirect(flask.url_for("favorites"))
 
 
 @app.route("/get_book_info")
@@ -455,34 +538,6 @@ def get_book_info():
         book_cover=book_cover,
         book_title=book_title,
     )
-
-
-@app.route("/profile", methods=["GET", "POST"])
-@login_required
-def profile():
-    form = UserForm()
-    id = current_user.id
-    name_to_update = Users.query.get_or_404(id)
-    if request.method == "POST":
-
-        name_to_update.email = request.form["email"]
-
-        name_to_update.username = request.form["username"]
-        try:
-            db.session.commit()
-            flash("User Updated Successfully!")
-            return render_template(
-                "profile.html", form=form, name_to_update=name_to_update, id=id
-            )
-        except:
-            flash("Error!  Looks like there was a problem...try again!")
-            return render_template(
-                "profile.html", form=form, name_to_update=name_to_update, id=id
-            )
-    else:
-        return render_template(
-            "profile.html", form=form, name_to_update=name_to_update, id=id
-        )
 
 
 app.register_blueprint(bp)

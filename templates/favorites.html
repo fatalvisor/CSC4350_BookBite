@@ -11,9 +11,7 @@
         {{ return_home_button.submit }}
     </form>
 
-    <div class=center-text>
-        <h1>Your Favorites:</h1>
-    </div>
+    <h1 class=center-text>Your Favorites:</h1>
 
     <!--Flashed messages will appear here.-->
     {% with messages = get_flashed_messages() %}
@@ -24,26 +22,21 @@
     {% endif %}
     {% endwith %}
 
-
-
-    <form action="/add_recommendations" method="POST">
-        <input type="text" name="isbn" style="width: 200px;" , placeholder="Enter ISBN here!">
-        <input type="text" name="userEmail" style="width: 200px;" , placeholder="Enter friends email here!">
-        <input type="submit" value="Submit">
-    </form>
-
     {% if num_books is defined %}
     {% for index in range(num_books) %}
     <div>
         <p><b>Title: {{book_titles[index]}}</b></p>
-        <form action="/handle_dualsubmits_delete" method="POST">
-            {{ bookinfo_form_d.csrf_token }}
-            {{ bookinfo_form_d.original_route(value=route_name, type="hidden") }}
-            {{ bookinfo_form_d.isbn(value=book_ISBNs[index], type="hidden") }}
-            {{ bookinfo_form_d.submit_explore }}
-            {{ bookinfo_form_d.submit_delete_favorite }}
+        <form action="/handle_triple_submits" method="POST">
+            {{ bookinfo_form_srecs.csrf_token }}
+            {{ bookinfo_form_srecs.isbn(value=book_ISBNs[index], type="hidden") }}
+            {{ bookinfo_form_srecs.receiver_username }}
+            {{ bookinfo_form_srecs.submit_recommend }}<br>
+
+            <img src="{{book_urls[index]}}" /><br>
+
+            {{ bookinfo_form_srecs.submit_explore }}
+            {{ bookinfo_form_srecs.submit_delete }}
         </form>
-        <img src="{{book_urls[index]}}" />
     </div>
     {% endfor %}
     {% endif %}
