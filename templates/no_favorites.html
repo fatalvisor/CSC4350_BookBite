@@ -6,13 +6,16 @@
 </head>
 
 <body>
+    <br>
     <form action="/homepage" method="POST">
         {{ return_home_button.csrf_token }}
         {{ return_home_button.submit }}
     </form>
-
-    <h1>You Currently Have no Favorites!</h1>
-
+    <div class="verticle-center">
+        <div class="center-text">
+            <h1>You Currently Have no Favorites!</h1>
+        </div>
+    </div>
 
 </body>
 
