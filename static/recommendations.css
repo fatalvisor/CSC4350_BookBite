@@ -29,3 +29,7 @@ body {
     grid-gap: 5px;
     grid-template-columns: 40% 40%;
 }
+
+.verticle-center {
+    padding: 250px 0;
+}
