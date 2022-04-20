@@ -216,7 +216,6 @@ def homepage():
         book_ISBNs=book_ISBNs,
         num_books=num_books,
         display_number=display_number,
-        favorite_themes=favorite_themes,
     )
 
 
