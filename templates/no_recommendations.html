@@ -14,6 +14,14 @@
     <div class="verticle-center">
         <div class="center-text">
             <h1>You Currently Have no Recommendations!</h1>
+            <!--Flashed messages will appear here.-->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <b>{{message}}</b>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
         </div>
     </div>
 

@@ -15,6 +15,15 @@
     <br>
 
     <h1 id="primary_header">Welcome to the main page. What would you like to do?</h1>
+    <!--Flashed messages will appear here.-->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <b>{{message}}</b>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     <br>
     <p id="main_content_1">
     <div class="options-grid">

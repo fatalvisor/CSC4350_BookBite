@@ -1,12 +1,10 @@
 body {
-    background-color: #76CDD7;
+    background-image: url(authentication_background.jpg);
 }
 
 .center-text {
     text-align: center;
 }
-
-
 
 .verticle-center {
     padding: 250px 0;
