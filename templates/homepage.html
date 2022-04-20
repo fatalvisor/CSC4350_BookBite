@@ -21,6 +21,22 @@
         <a class="options" href="{{url_for('favorites')}}"><b>See your favorites!</b></a><br><br>
         <a class="options" href="{{url_for('recommendations')}}"><b>See your recommendations!</b></a>
     </p>
+
+    {% if num_books != 0 %}
+    {% for index in range(display_number) %}
+    <div>
+        <p><b>Title: {{book_titles[index]}}</b></p>
+        <form action="/handle_dualsubmits_add" method="POST">
+            {{ bookinfo_form_a.csrf_token }}
+            {{ bookinfo_form_a.original_route(value=route_name, type="hidden") }}
+            {{ bookinfo_form_a.isbn(value=book_ISBNs[index], type="hidden") }}
+            {{ bookinfo_form_a.submit_explore }}
+            {{ bookinfo_form_a.submit_add }}
+        </form>
+        <img src="{{book_urls[index]}}" />
+    </div>
+    {% endfor %}
+    {% endif %}
 </body>
 
 </html>

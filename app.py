@@ -2,6 +2,7 @@
 import os
 import flask
 import bcrypt
+from collections import Counter
 from flask import flash, request, render_template
 from dotenv import find_dotenv, load_dotenv
 from flask_bcrypt import Bcrypt
@@ -29,7 +30,13 @@ from models import (
     Favorites,
     Recommendations,
 )
-from penguin import book_suggestions, title_search, all_book_info, basic_book_info
+from penguin import (
+    book_suggestions,
+    title_search,
+    all_book_info,
+    basic_book_info,
+    get_single_book_theme,
+)
 
 app = flask.Flask(__name__)
 load_dotenv(find_dotenv())
@@ -129,6 +136,7 @@ def logout():
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
+    """Provides the current user with the ability to update their username, email, and password."""
     form = UserForm()
     id = current_user.id
     name_to_update = Users.query.get_or_404(id)
@@ -162,7 +170,42 @@ def profile():
 def homepage():
     """Renders the basic landing page from which most other HTML pages can be reached."""
     logout_button = LogoutButton()
-    return flask.render_template("homepage.html", logout_button=logout_button)
+    bookinfo_form_a = BookInfoFormAdd()
+    route_name = "homepage"
+    display_number = 1
+
+    all_favorites = Favorites.query.filter_by(email=current_user.email).all()
+    num_books = len(all_favorites)
+
+    favorite_themes = []
+    for i in range(num_books):
+        book_theme = get_single_book_theme(all_favorites[i].bookISBN)
+        favorite_themes.append(book_theme)
+
+    if num_books != 0:
+        occurence_count = Counter(favorite_themes)
+        most_common_theme = occurence_count.most_common(1)[0][0]
+        book_titles, book_urls, book_ISBNs = book_suggestions(
+            most_common_theme, display_number
+        )
+    else:
+        book_titles = []
+        book_urls = []
+        book_ISBNs = []
+
+    return flask.render_template(
+        "homepage.html",
+        logout_button=logout_button,
+        route_name=route_name,
+        bookinfo_form_a=bookinfo_form_a,
+        book_titles=book_titles,
+        book_urls=book_urls,
+        book_ISBNs=book_ISBNs,
+        num_books=num_books,
+        display_number=display_number,
+        favorite_themes=favorite_themes,
+    )
+    # return flask.render_template("homepage.html", logout_button=logout_button)
 
 
 @app.route("/suggestions", methods=["GET", "POST"])
@@ -188,8 +231,11 @@ def handle_theme_suggestions():
     route_name = "suggestions"
     theme_form = BookThemeForm()
     bookinfo_form_a = BookInfoFormAdd()
+    display_number = 6
     if theme_form.validate_on_submit():
-        book_titles, book_urls, book_ISBNs = book_suggestions(theme_form.theme.data)
+        book_titles, book_urls, book_ISBNs = book_suggestions(
+            theme_form.theme.data, display_number
+        )
         num_books = len(book_titles)
         return flask.render_template(
             "suggestions.html",
