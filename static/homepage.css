@@ -11,7 +11,37 @@ body {
 }
 
 .options {
-    background-color: grey;
+
     color: yellow;
     font-size: 20px;
+}
+
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 25% 25% 20% 25%;
+    padding-left: 130px;
+}
+
+
+.center-text {
+    text-align: center;
+}
+
+
+.center-image {
+    display: inline-block;
+}
+
+
+.grid-column {
+    display: grid;
+    grid-template-columns: 33% 30% 30%;
+    padding: 10px;
+    gap: 30px;
+}
+
+
+.verticle-center {
+    padding: 250px 0;
 }

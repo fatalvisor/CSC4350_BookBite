@@ -24,28 +24,37 @@
     {% endif %}
     {% endwith %}
 
+    <br>
     <p id="main_content_1">
-        <a class="options" href="{{url_for('suggestions')}}"><b>Looking for suggestions?</b></a><br><br>
-        <a class="options" href="{{url_for('search_by_title')}}"><b>Search for Books by Title!</b></a><br><br>
-        <a class="options" href="{{url_for('favorites')}}"><b>See your favorites!</b></a><br><br>
+    <div class="options-grid">
+        <a class="options" href="{{url_for('suggestions')}}"><b>Looking for suggestions?</b></a>
+        <a class="options" href="{{url_for('search_by_title')}}"><b>Search for Books by Title!</b></a>
+        <a class="options" href="{{url_for('favorites')}}"><b>See your favorites!</b></a>
         <a class="options" href="{{url_for('recommendations')}}"><b>See your recommendations!</b></a>
-    </p>
-
-    {% if num_books != 0 %}
-    {% for index in range(display_number) %}
-    <div>
-        <p><b>Title: {{book_titles[index]}}</b></p>
-        <form action="/handle_dualsubmits_add" method="POST">
-            {{ bookinfo_form_a.csrf_token }}
-            {{ bookinfo_form_a.original_route(value=route_name, type="hidden") }}
-            {{ bookinfo_form_a.isbn(value=book_ISBNs[index], type="hidden") }}
-            {{ bookinfo_form_a.submit_explore }}
-            {{ bookinfo_form_a.submit_add }}
-        </form>
-        <img src="{{book_urls[index]}}" />
     </div>
-    {% endfor %}
-    {% endif %}
+    </p>
+    <br>
+    <div class="center-text">
+        {% if num_books != 0 %}
+        {% for index in range(display_number) %}
+        <div>
+            <p>Recommend based upon your favorites:</p>
+            <p><b>Title: {{book_titles[index]}}</b></p>
+            <form action="/handle_dualsubmits_add" method="POST">
+                {{ bookinfo_form_a.csrf_token }}
+                {{ bookinfo_form_a.original_route(value=route_name, type="hidden") }}
+                {{ bookinfo_form_a.isbn(value=book_ISBNs[index], type="hidden") }}
+                {{ bookinfo_form_a.submit_explore }}
+                {{ bookinfo_form_a.submit_add }}
+            </form>
+            <br>
+            <div class="center-image">
+                <img src="{{book_urls[index]}}" />
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
 </body>
 
 </html>
