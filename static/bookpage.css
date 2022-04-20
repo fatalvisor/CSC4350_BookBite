@@ -1,11 +1,25 @@
 body {
-    background-color: #76CDD7;
+    background-image: url(sidepage_bg.jpg);
+}
+
+h1 {
+    font-size: 45px;
+    background-color: peachpuff
+}
+
+img {
+    border-radius: 10%;
+    border: 2px solid black;
+}
+
+img:hover {
+    transform: scale(1.03);
 }
 
 .center-text {
     text-align: center;
+    font-size: 19px;
 }
-
 
 .center-image {
     display: inline-block;

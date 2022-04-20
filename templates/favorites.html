@@ -11,16 +11,18 @@
         {{ return_home_button.submit }}
     </form>
 
-    <h1 class=center-text>Your Favorites:</h1>
+    <h1>Your Favorite Library:</h1>
 
-    <!--Flashed messages will appear here.-->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <b>{{message}}</b>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    <div class="center-text">
+        <!--Flashed messages will appear here.-->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <b>{{message}}</b>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
 
     {% if num_books is defined %}
     <div class="grid-column">

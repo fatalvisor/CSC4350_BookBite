@@ -2,6 +2,10 @@ body {
     background-image: url(authentication_background.jpg);
 }
 
+h1 {
+    font-size: 45px;
+}
+
 .center-text {
     text-align: center;
 }

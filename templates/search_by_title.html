@@ -12,7 +12,7 @@
     </form>
 
     <div class="center-text">
-        <h1>Provide the title! Suggestions will be Provided:</h1>
+        <h1>Provide the Title! Key Suggestions will be Provided:</h1>
 
         <!--Flashed messages will appear here.-->
         {% with messages = get_flashed_messages() %}
@@ -21,7 +21,7 @@
         <b>{{message}}</b>
         {% endfor %}
         {% endif %}
-        {% endwith %}
+        {% endwith %}<br>
 
         <div class="center-image">
             <form method="POST" action="/handle_title_selection">

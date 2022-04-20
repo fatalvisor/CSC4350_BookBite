@@ -12,18 +12,17 @@
     </form>
     <div class="verticle-center">
         <div class="center-text">
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            <b>{{message}}</b>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-
             <div class="profile">
                 <h1>Account Info</h1>
-                Username : {{current_user.username}} <br>
-                Email: {{current_user.email}} <br> <br>
+                <b>Username</b> : {{current_user.username}} <br>
+                <b>Email:</b> {{current_user.email}} <br> <br>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                <b>{{message}}</b>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
             </div>
             <br> <br>
 

@@ -59,7 +59,6 @@ bp = flask.Blueprint(
 
 db.init_app(app)
 with app.app_context():
-    # db.drop_all()
     db.create_all()
     login_manager = LoginManager()
     login_manager.login_view = "login"
@@ -130,13 +129,14 @@ def login_post():
 def logout():
     """Clears the current user's session cookies and redirects you back to the login page."""
     logout_user()
+    flask.flash("You have successfully logged out.")
     return flask.redirect(flask.url_for("login"))
 
 
 @app.route("/profile", methods=["GET", "POST"])
 @login_required
 def profile():
-    """Provides the current user with the ability to update their username, email, and password."""
+    """Provides the current user with the ability to update their username and email."""
     return_home_button = ReturnHomeButton()
     form = UserForm()
     id = current_user.id
@@ -218,7 +218,6 @@ def homepage():
         display_number=display_number,
         favorite_themes=favorite_themes,
     )
-    # return flask.render_template("homepage.html", logout_button=logout_button)
 
 
 @app.route("/suggestions", methods=["GET", "POST"])
@@ -368,7 +367,7 @@ def handle_dualsubmits_add():
 @app.route("/handle_triple_submits", methods=["POST"])
 @login_required
 def handle_triple_submits():
-    """Based on whether the user wants to explore a book or unfavorite a book, redirect to proper routes accordingly."""
+    """Based on whether the user wants to explore a book, unfavorite a book, or send a book recommendation, redirect to proper routes accordingly."""
     bookinfo_form_srecs = BookInfoFormSendRecs()
     if bookinfo_form_srecs.validate_on_submit():
         if bookinfo_form_srecs.submit_explore.data is True:
@@ -395,7 +394,7 @@ def handle_triple_submits():
 @app.route("/handle_triplesubmits_recdelete", methods=["POST"])
 @login_required
 def handle_triplesubmits_recdelete():
-    """Based on whether the user wants to explore a book or unfavorite a book, redirect to proper routes accordingly."""
+    """Based on whether the user wants to explore a book, unfavorite a book, or delete a book recommendation from another, redirect to proper routes accordingly."""
     bookinfo_form_drecs = BookInfoFormDeleteRecs()
     if bookinfo_form_drecs.validate_on_submit():
         if bookinfo_form_drecs.submit_explore.data is True:
@@ -459,7 +458,7 @@ def delete_favorite():
 @app.route("/recommendations")
 @login_required
 def recommendations():
-    """Displays the current user's favorited books on the 'recommendations' page."""
+    """Displays recommended books sent by other users to the currnent user on the 'recommendations' page."""
     return_home_button = ReturnHomeButton()
     bookinfo_form_drecs = BookInfoFormDeleteRecs()
     all_recommendations = Recommendations.query.filter_by(
@@ -497,29 +496,10 @@ def recommendations():
         )
 
 
-@app.route("/handle_dualsubmits_recommendations_delete", methods=["POST"])
-@login_required
-def handle_dualsubmits_recommendations_delete():
-    """Based on whether the user wants to explore a book or unfavorite a book, redirect to proper routes accordingly."""
-    bookinfo_form_d = BookInfoFormAdd()
-    if bookinfo_form_d.validate_on_submit():
-        if bookinfo_form_d.submit_explore.data is True:
-            return flask.redirect(
-                flask.url_for("get_book_info", isbn=bookinfo_form_d.isbn.data)
-            )
-        else:
-            return flask.redirect(
-                flask.url_for(
-                    "delete_recommendations",
-                    isbn=bookinfo_form_d.isbn.data,
-                )
-            )
-
-
 @app.route("/add_recommendations")
 @login_required
 def add_recommendations():
-    """Adds a valid book ISBN to the favorites list before redirecting the user to the original page from which a book was recommended."""
+    """Adds a valid book ISBN to another user's recommendations list before redirecting the current user to the original page from which a book was recommended."""
     isbn = flask.request.args.get("isbn")
     receiver_username = flask.request.args.get("receiver_username")
     if receiver_username == "":
@@ -559,7 +539,7 @@ def add_recommendations():
 @app.route("/delete_recommendations")
 @login_required
 def delete_recommendations():
-    """If found, removes a book from the recommendations list before returning the user back to the favorites page."""
+    """If found, removes a book from the current user's recommendations list before returning the user back to the recommendations page."""
     isbn = flask.request.args.get("isbn")
     deleted_book = Recommendations.query.filter_by(
         receiverUsername=current_user.username, bookISBN=isbn
