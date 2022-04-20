@@ -11,9 +11,7 @@
         {{ return_home_button.submit }}
     </form>
 
-    <div class=center-text>
-        <h1>Your Recommendations:</h1>
-    </div>
+    <h1 class=center-text>Your Recommendations:</h1>
 
     <!--Flashed messages will appear here.-->
     {% with messages = get_flashed_messages() %}
@@ -28,14 +26,17 @@
     {% for index in range(num_books) %}
     <div>
         <p><b>Title: {{book_titles[index]}}</b></p>
-        <form action="/handle_dualsubmits_recommendations_delete" method="POST">
-            {{ bookinfo_form_d.csrf_token }}
-            {{ bookinfo_form_d.original_route(value=route_name, type="hidden") }}
-            {{ bookinfo_form_d.isbn(value=book_ISBNs[index], type="hidden") }}
-            {{ bookinfo_form_d.submit_explore }}
-            {{ bookinfo_form_d.submit_delete_favorite }}
+        <p><b>Sent by: {{recommendation_senders[index]}}</b></p>
+        <form action="/handle_triplesubmits_recdelete" method="POST">
+            {{ bookinfo_form_drecs.csrf_token }}
+            {{ bookinfo_form_drecs.isbn(value=book_ISBNs[index], type="hidden") }}
+            {{ bookinfo_form_drecs.submit_explore }}
+            {{ bookinfo_form_drecs.submit_favorite }} <br>
+
+            <img src="{{book_urls[index]}}" /><br>
+
+            {{ bookinfo_form_drecs.submit_delete }}
         </form>
-        <img src="{{book_urls[index]}}" />
     </div>
     {% endfor %}
     {% endif %}

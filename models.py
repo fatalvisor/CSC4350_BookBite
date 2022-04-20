@@ -3,7 +3,7 @@ from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 from wtforms import StringField, SubmitField, PasswordField, SelectField
 from flask_wtf import FlaskForm
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms.validators import InputRequired, Length, ValidationError, Optional
 
 db = SQLAlchemy()
 
@@ -72,7 +72,7 @@ class UserForm(FlaskForm):
 # SECTION 2: FORMS USED FOR CRITICAL FUNCTIONS IN PRIMARY HTML PAGES
 # =====================================================================
 class BookInfoFormAdd(FlaskForm):
-    """Establishes the basic fields required for a form used to pull certain information about a displayed book or add a new favorite book, given an ISBN."""
+    """Establishes the basic fields required for a form used to pull certain information about a displayed book given an ISBN. A favorite button is also provided."""
 
     original_route = StringField(render_kw={"readonly": True})
 
@@ -81,19 +81,39 @@ class BookInfoFormAdd(FlaskForm):
         render_kw={"readonly": True},
     )
     submit_explore = SubmitField(label="Explore")
-    submit_add_favorite = SubmitField(label="Favorite")
+    submit_add = SubmitField(label="Favorite")
 
 
-class BookInfoFormDelete(FlaskForm):
-    """Establishes the basic fields required for a form used to pull certain information about a displayed book or delete a favorite book, given an ISBN."""
+class BookInfoFormSendRecs(FlaskForm):
+    """Establishes the basic fields required for a form used to pull certain information about a displayed book or send a specific user a recommendation."""
 
-    original_route = StringField(render_kw={"readonly": True})
     isbn = StringField(
         validators=[Length(min=1, max=15)],
         render_kw={"readonly": True},
     )
+    receiver_username = StringField(
+        validators=[Length(min=1, max=80), Optional()],
+        render_kw={"placeholder": "Friend's Username"},
+    )
     submit_explore = SubmitField(label="Explore")
-    submit_delete_favorite = SubmitField(label="Unfavorite")
+    submit_delete = SubmitField(label="Unfavorite")
+    submit_recommend = SubmitField(label="Recommend")
+
+
+class BookInfoFormDeleteRecs(FlaskForm):
+    """Establishes the basic fields required for a form used to pull certain information about a displayed book or delete a recommendation from other users."""
+
+    isbn = StringField(
+        validators=[Length(min=1, max=15)],
+        render_kw={"readonly": True},
+    )
+    receiver_username = StringField(
+        validators=[Length(min=1, max=80), Optional()],
+        render_kw={"placeholder": "Friend's Username"},
+    )
+    submit_explore = SubmitField(label="Explore")
+    submit_favorite = SubmitField(label="Favorite")
+    submit_delete = SubmitField(label="Not Interested")
 
 
 class BookThemeForm(FlaskForm):
@@ -136,7 +156,7 @@ class BookTitleForm(FlaskForm):
     """Establishes the basic fields required for a form used to pull certain information about a book, given a title."""
 
     title = StringField(
-        validators=[InputRequired(), Length(min=1, max=40)],
+        validators=[InputRequired(), Length(min=1, max=100)],
         render_kw={"placeholder": "Title"},
     )
     submit = SubmitField("Submit")
@@ -161,11 +181,11 @@ class LogoutButton(FlaskForm):
 # SECTION 4: DATABASE MODELS
 # =====================================================================
 class Users(db.Model, UserMixin):
-    """Defines a "Users" table in the database with two basic attributes, an ID and the user's login email."""
+    """Defines a "Users" table in the database with three basic attributes: the user's username, email, and password."""
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
-    email = db.Column(db.String(120), nullable=False, unique=True)
+    email = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(200), nullable=False)
 
 
@@ -173,7 +193,7 @@ class Favorites(db.Model):
     """Defines a "Favorites" table in the database with three basic attributes: an ID, the user's email, and the ISBN of the favorited book."""
 
     id = db.Column(db.Integer, primary_key=True)
-    userEmail = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
     bookISBN = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
@@ -184,8 +204,8 @@ class Recommendations(db.Model):
     """Defines a "Recommendations" table in the database with three basic attributes: an ID, the user's email, and the ISBN of the favorited book."""
 
     id = db.Column(db.Integer, primary_key=True)
-    userEmail = db.Column(db.String(100), nullable=False)
-    senderEmail = db.Column(db.String(100), nullable=False)
+    senderUsername = db.Column(db.String(80), nullable=False)
+    receiverUsername = db.Column(db.String(80), nullable=False)
     bookISBN = db.Column(db.String(100), nullable=False)
 
     def __repr__(self):
