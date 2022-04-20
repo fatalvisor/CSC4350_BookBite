@@ -5,43 +5,52 @@
 </head>
 
 <body>
+    <br>
     <form action="/homepage" method="POST">
         {{ return_home_button.csrf_token }}
         {{ return_home_button.submit }}
     </form>
 
-    <h1>Provide the title! Suggestions will be Provided:</h1>
+    <div class="center-text">
+        <h1>Provide the title! Suggestions will be Provided:</h1>
 
-    <!--Flashed messages will appear here.-->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <b>{{message}}</b>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+        <!--Flashed messages will appear here.-->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <b>{{message}}</b>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-    <form method="POST" action="/handle_title_selection">
-        {{ title_form.csrf_token }}
-        {{ title_form.title }}
-        {{ title_form.submit }}
-    </form>
-
+        <div class="center-image">
+            <form method="POST" action="/handle_title_selection">
+                {{ title_form.csrf_token }}
+                {{ title_form.title }}
+                {{ title_form.submit }}
+            </form>
+        </div>
+    </div>
+    <br>
     {% if error is defined %}
     <p>No results, try again</p>
     {% endif %}
 
     {% if num_books is defined %}
     <div>
-        <p><b>Title: {{book_title}}</b></p>
-        <form action="/handle_dualsubmits_add" method="POST">
-            {{ bookinfo_form_a.csrf_token }}
-            {{ bookinfo_form_a.original_route(value=route_name, type="hidden") }}
-            {{ bookinfo_form_a.isbn(value=book_ISBN, type="hidden") }}
-            {{ bookinfo_form_a.submit_explore }}
-            {{ bookinfo_form_a.submit_add}}
-        </form>
-        <img src="{{book_url}}" />
+        <div class="center-text">
+            <p><b>Title: {{book_title}}</b></p>
+            <div class="center-image">
+                <form action="/handle_dualsubmits_add" method="POST">
+                    {{ bookinfo_form_a.csrf_token }}
+                    {{ bookinfo_form_a.original_route(value=route_name, type="hidden") }}
+                    {{ bookinfo_form_a.isbn(value=book_ISBN, type="hidden") }}
+                    {{ bookinfo_form_a.submit_explore }}
+                    {{ bookinfo_form_a.submit_add}}
+                </form>
+                <img src="{{book_url}}" />
+            </div>
+        </div>
     </div>
     {% endif %}
 </body>
