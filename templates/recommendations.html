@@ -11,16 +11,18 @@
         {{ return_home_button.submit }}
     </form>
 
-    <h1 class=center-text>Your Recommendations:</h1>
+    <h1>Your Recommendations Inbox:</h1>
 
-    <!--Flashed messages will appear here.-->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <b>{{message}}</b>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    <div class="center-text">
+        <!--Flashed messages will appear here.-->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <b>{{message}}</b>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
 
     {% if num_books is defined %}
     <div class="grid-column">
@@ -28,15 +30,15 @@
         <div>
             <div class="center-text">
                 <p><b>Title: {{book_titles[index]}}</b></p>
-                <p><b>Sent by: {{recommendation_senders[index]}}</b></p>
+                <p><b>Sent by:</b> {{recommendation_senders[index]}}</p>
                 <div class="center-image">
                     <form action="/handle_triplesubmits_recdelete" method="POST">
                         {{ bookinfo_form_drecs.csrf_token }}
                         {{ bookinfo_form_drecs.isbn(value=book_ISBNs[index], type="hidden") }}
                         {{ bookinfo_form_drecs.submit_explore }}
-                        {{ bookinfo_form_drecs.submit_favorite }} <br>
+                        {{ bookinfo_form_drecs.submit_favorite }} <br><br>
 
-                        <img src="{{book_urls[index]}}" /><br>
+                        <img src="{{book_urls[index]}}" /><br><br>
 
                         {{ bookinfo_form_drecs.submit_delete }}
                     </form>

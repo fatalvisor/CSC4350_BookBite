@@ -62,6 +62,8 @@ class LoginForm(FlaskForm):
 
 
 class UserForm(FlaskForm):
+    """Establishes the basic fields required for a form used to update a user's username and email information."""
+
     username = StringField("Username", validators=[InputRequired()])
     email = StringField("Email", validators=[InputRequired()])
 
@@ -168,7 +170,7 @@ class BookTitleForm(FlaskForm):
 class ReturnHomeButton(FlaskForm):
     """Creates a form with a single button to send the user back to the homepage when clicked."""
 
-    submit = SubmitField("Return home")
+    submit = SubmitField("Return Home")
 
 
 class LogoutButton(FlaskForm):
@@ -181,7 +183,7 @@ class LogoutButton(FlaskForm):
 # SECTION 4: DATABASE MODELS
 # =====================================================================
 class Users(db.Model, UserMixin):
-    """Defines a "Users" table in the database with three basic attributes: the user's username, email, and password."""
+    """Defines a "Users" table in the database with three basic attributes outside of id: the user's username, email, and password."""
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), nullable=False)
@@ -190,7 +192,7 @@ class Users(db.Model, UserMixin):
 
 
 class Favorites(db.Model):
-    """Defines a "Favorites" table in the database with three basic attributes: an ID, the user's email, and the ISBN of the favorited book."""
+    """Defines a "Favorites" table in the database with two basic attributes outside of ID: the user's email and the ISBN of the favorited book."""
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), nullable=False)
@@ -201,7 +203,7 @@ class Favorites(db.Model):
 
 
 class Recommendations(db.Model):
-    """Defines a "Recommendations" table in the database with three basic attributes: an ID, the user's email, and the ISBN of the favorited book."""
+    """Defines a "Recommendations" table in the database with three basic attributes outside of ID: the sender's name, receiver's name, and ISBN of the recommended book."""
 
     id = db.Column(db.Integer, primary_key=True)
     senderUsername = db.Column(db.String(80), nullable=False)

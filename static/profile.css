@@ -1,9 +1,15 @@
 body {
-  background-color: #76CDD7;
+  background-image: url(authentication_background.jpg);
+}
+
+h1 {
+  font-size: 45px;
+  background-color: peachpuff
 }
 
 .center-text {
   text-align: center;
+  font-size: 20px;
 }
 
 

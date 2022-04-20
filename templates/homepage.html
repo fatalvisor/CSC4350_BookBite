@@ -11,21 +11,23 @@
         {{ logout_button.submit }}
     </form> <br>
 
-    <a href="{{url_for('profile')}}">Profile</a>
+    <a class="options" href="{{url_for('profile')}}"><b>Edit Profile</b></a>
     <br>
 
-    <h1 id="primary_header">Welcome to the main page. What would you like to do?</h1>
-    <!--Flashed messages will appear here.-->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <b>{{message}}</b>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+    <h1 id="primary_header">Welcome home. What would you like to do?</h1>
 
-    <br>
-    <p id="main_content_1">
+    <div class="center-text">
+        <!--Flashed messages will appear here.-->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <b>{{message}}</b>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div><br>
+
+    <p class="main_content_1">
     <div class="options-grid">
         <a class="options" href="{{url_for('suggestions')}}"><b>Looking for suggestions?</b></a>
         <a class="options" href="{{url_for('search_by_title')}}"><b>Search for Books by Title!</b></a>
@@ -38,7 +40,7 @@
         {% if num_books != 0 %}
         {% for index in range(display_number) %}
         <div>
-            <p>Recommend based upon your favorites:</p>
+            <p>Based upon your favorites, we recommend you check out:</p>
             <p><b>Title: {{book_titles[index]}}</b></p>
             <form action="/handle_dualsubmits_add" method="POST">
                 {{ bookinfo_form_a.csrf_token }}

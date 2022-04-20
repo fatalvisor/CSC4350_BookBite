@@ -4,14 +4,14 @@ from bs4 import BeautifulSoup  # Please run sudo pip3 install beautifulsoup4 to 
 
 
 def tag_remove(text):
-    """Using BeautifulSoup to remove HTML tags"""
+    """Uses BeautifulSoup to remove all HTML tags."""
     soup = BeautifulSoup(text, "html.parser")
     result = soup.get_text()
     return result
 
 
 def get_themes(themes):
-    """Get the book themes if exist"""
+    """Details the list of book themes if they exist."""
     book_themes = []
     if themes is not None:
         for theme in themes["theme"]:
@@ -103,7 +103,7 @@ def basic_book_info(isbn):
 
 
 def all_book_info(isbn):
-    """Grabs all the information about a single book using the provided ISBN number."""
+    """Grabs all relevant information about a single book using the provided ISBN number."""
     isbn = str(isbn)
     try:
         BASE_URL = "https://reststop.randomhouse.com/resources/titles/"
@@ -163,7 +163,7 @@ def all_book_info(isbn):
 
 
 def get_single_book_theme(isbn):
-    """Grabs all the information about a single book using the provided ISBN number."""
+    """Grabs the primary theme of a single book using the provided ISBN number."""
     isbn = str(isbn)
     try:
         BASE_URL = "https://reststop.randomhouse.com/resources/titles/"
