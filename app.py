@@ -198,6 +198,11 @@ def homepage():
     if num_books != 0:
         occurence_count = Counter(favorite_themes)
         most_common_theme = occurence_count.most_common(1)[0][0]
+
+        # Grabs the second most common theme if the most common theme is "None".
+        if most_common_theme == "None":
+            most_common_theme = occurence_count.most_common(2)[1][0]
+
         book_titles, book_urls, book_ISBNs = book_suggestions(
             most_common_theme, display_number
         )
