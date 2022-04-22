@@ -79,8 +79,7 @@ class BookInfoFormAdd(FlaskForm):
     original_route = StringField(render_kw={"readonly": True})
 
     isbn = StringField(
-        validators=[Length(min=1, max=15)],
-        render_kw={"readonly": True},
+        validators=[Length(min=1, max=15)], render_kw={"readonly": True},
     )
     submit_explore = SubmitField(label="Explore")
     submit_add = SubmitField(label="Favorite")
@@ -90,8 +89,7 @@ class BookInfoFormSendRecs(FlaskForm):
     """Establishes the basic fields required for a form used to pull certain information about a displayed book or send a specific user a recommendation."""
 
     isbn = StringField(
-        validators=[Length(min=1, max=15)],
-        render_kw={"readonly": True},
+        validators=[Length(min=1, max=15)], render_kw={"readonly": True},
     )
     receiver_username = StringField(
         validators=[Length(min=1, max=80), Optional()],
@@ -106,8 +104,7 @@ class BookInfoFormDeleteRecs(FlaskForm):
     """Establishes the basic fields required for a form used to pull certain information about a displayed book or delete a recommendation from other users."""
 
     isbn = StringField(
-        validators=[Length(min=1, max=15)],
-        render_kw={"readonly": True},
+        validators=[Length(min=1, max=15)], render_kw={"readonly": True},
     )
     receiver_username = StringField(
         validators=[Length(min=1, max=80), Optional()],
@@ -212,3 +209,21 @@ class Recommendations(db.Model):
 
     def __repr__(self):
         return "<Favorites %r>" % self.bookISBN
+
+
+class Review(db.Model):
+    """ "Creating Review table"""
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(30), nullable=False)
+    isbn = db.Column(db.String(15), nullable=False)
+    comment = db.Column(db.String(200), nullable=False)
+    rating = db.Column(db.String(15), nullable=False)
+
+    def __repr__(self):
+        """ "Creating Review table"""
+        return f"<User {self.username}>"
+
+    def get_username(self):
+        """ "Creating Review table"""
+        return self.username
