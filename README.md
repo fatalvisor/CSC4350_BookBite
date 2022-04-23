@@ -1,5 +1,5 @@
-The URL for the Heroku app (Version 1) is: https://aqueous-castle-25369.herokuapp.com/ \
-The URL for the Heroku app (Version 2) is: https://mighty-stream-05426.herokuapp.com/
+**The URL for the Final Heroku app (Version 2.0) is**: https://mighty-stream-05426.herokuapp.com/ \
+The URL for the Heroku app (Version 1.0) is: https://aqueous-castle-25369.herokuapp.com/
 
 # Welcome to Book Bite
 
