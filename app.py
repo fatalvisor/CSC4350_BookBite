@@ -29,6 +29,8 @@ from models import (
     Users,
     Favorites,
     Recommendations,
+    Review,
+    ReviewForm,
 )
 from penguin import (
     book_suggestions,
@@ -51,11 +53,7 @@ bcrypt = Bcrypt(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-bp = flask.Blueprint(
-    "bp",
-    __name__,
-    template_folder="./static/react",
-)
+bp = flask.Blueprint("bp", __name__, template_folder="./static/react",)
 
 db.init_app(app)
 with app.app_context():
@@ -333,8 +331,7 @@ def favorites():
 
     if num_books == 0:
         return flask.render_template(
-            "no_favorites.html",
-            return_home_button=return_home_button,
+            "no_favorites.html", return_home_button=return_home_button,
         )
     else:
         return flask.render_template(
@@ -380,10 +377,7 @@ def handle_triple_submits():
             )
         elif bookinfo_form_srecs.submit_delete.data is True:
             return flask.redirect(
-                flask.url_for(
-                    "delete_favorite",
-                    isbn=bookinfo_form_srecs.isbn.data,
-                )
+                flask.url_for("delete_favorite", isbn=bookinfo_form_srecs.isbn.data,)
             )
         else:
             return flask.redirect(
@@ -484,8 +478,7 @@ def recommendations():
 
     if num_books == 0:
         return flask.render_template(
-            "no_recommendations.html",
-            return_home_button=return_home_button,
+            "no_recommendations.html", return_home_button=return_home_button,
         )
     else:
         return flask.render_template(
@@ -554,11 +547,16 @@ def delete_recommendations():
     return flask.redirect(flask.url_for("recommendations"))
 
 
-@app.route("/get_book_info")
+@app.route("/get_book_info", methods=["GET", "POST"])
 @login_required
 def get_book_info():
     """Displays even more specific info about a book in a separate "bookpage" page based on the provided ISBN."""
+    review_form = ReviewForm()
+    return_home_button = ReturnHomeButton()
     book_isbn = flask.request.args.get("isbn")
+    if book_isbn is None:
+        book_isbn = review_form.isbn.data
+    isbn_str = str(book_isbn)
     (
         author,
         flapcopy,
@@ -569,7 +567,53 @@ def get_book_info():
         book_cover,
         book_title,
     ) = all_book_info(book_isbn)
-
+    review = Review.query.filter_by(isbn=isbn_str).all()
+    num_review = len(review)
+    if num_review == 0:
+        flask.flash("Be the first to add a comment for this book")
+    if review_form.validate_on_submit():
+        try:
+            isbn_str = str(review_form.isbn.data)
+            new_review = Review(
+                username=current_user.username,
+                isbn=isbn_str,
+                comment=review_form.comment.data,
+                rating=review_form.rating.data,
+            )
+            db.session.add(new_review)
+            db.session.commit()
+            new_review = Review.query.filter_by(isbn=isbn_str).all()
+            new_num_review = len(new_review)
+            return flask.render_template(
+                "bookpage.html",
+                author=author,
+                flapcopy=flapcopy,
+                author_bio=author_bio,
+                book_isbn=book_isbn,
+                page_num=page_num,
+                book_theme=book_theme,
+                book_cover=book_cover,
+                book_title=book_title,
+                review=new_review,
+                num_review=new_num_review,
+                review_form=review_form,
+                return_home_button=return_home_button,
+            )
+        except ValueError:
+            flask.flash("Something went wrong")
+            return flask.render_temlate(
+                "bookpage.html",
+                author=author,
+                flapcopy=flapcopy,
+                author_bio=author_bio,
+                book_isbn=book_isbn,
+                page_num=page_num,
+                book_theme=book_theme,
+                book_cover=book_cover,
+                book_title=book_title,
+                review_form=review_form,
+                return_home_button=return_home_button,
+            )
     return flask.render_template(
         "bookpage.html",
         author=author,
@@ -580,6 +624,10 @@ def get_book_info():
         book_theme=book_theme,
         book_cover=book_cover,
         book_title=book_title,
+        review=review,
+        num_review=num_review,
+        review_form=review_form,
+        return_home_button=return_home_button,
     )
 
 
