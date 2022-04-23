@@ -1,27 +1,66 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <link rel="stylesheet" href="/static/bookpage.css" />
-</head>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+  </head>
 
-<body>
+  <body>
+    <form action="/homepage" method="POST">
+      {{ return_home_button.csrf_token }} {{ return_home_button.submit }}
+    </form>
     <div class="center-text">
-        <h1>About the book:</h1>
+      <h1>About the book:</h1>
 
-        <b>{{book_title}}</b><br><br>
-        <div class="center-image">
-            <img src="{{book_cover}}" /><br>
-        </div>
-        <div class="text-margins">
-            <p><b>By: {{author}}</b></p>
-            <p><b>About the author:</b> {{author_bio}}</p>
-            <p><b>Summary:</b> {{flapcopy}}</p>
-            <p><b>ISBN:</b> {{book_isbn}}</p>
-            <p>{{book_theme}}</p>
-            <p>This book is about {{page_num}} pages</p>
-        </div>
+      <b>{{book_title}}</b><br /><br />
+      <div class="center-image"><img src="{{book_cover}}" /><br /></div>
+      <div class="text-margins">
+        <p><b>By: {{author}}</b></p>
+        <p><b>About the author:</b> {{author_bio}}</p>
+        <p><b>Summary:</b> {{flapcopy}}</p>
+        <p><b>ISBN:</b> {{book_isbn}}</p>
+        <p>{{book_theme}}</p>
+        <p>This book is about {{page_num}} pages</p>
+      </div>
     </div>
-</body>
-
+    <div class="review">
+      <div class="reviewForm">
+        <h2>Reviews</h2>
+        <form method="POST" action="/get_book_info">
+          {{review_form.csrf_token}} {{review_form.isbn(value=book_isbn,
+          type="hidden")}} {{review_form.comment}}
+          <br />
+          {% for subfield in review_form.rating %}
+          <tr>
+            <td>{{subfield}}</td>
+            <td>{{subfield.label}}</td>
+          </tr>
+          {%endfor%} {{review_form.submit}}
+        </form>
+      </div>
+      <br />
+      <br />
+      {% with messages = get_flashed_messages() %} {% if messages %} {% for
+      message in messages %}
+      <b>{{message}}</b>
+      {% endfor %} {% endif %} {% endwith %} {% if num_review != 0 %}
+      <div class="prevComment">
+        <b>What Do Others Say About This Book</b>
+        <ul>
+          {% for i in range(num_review) %}
+          <li>
+            <p>
+              <b>{{review[i].username}} - </b> {{review[i].comment}}
+              {{review[i].rating}}/5
+            </p>
+          </li>
+          {%endfor%}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </body>
 </html>

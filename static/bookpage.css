@@ -29,3 +29,12 @@ img:hover {
     margin-left: 300px;
     margin-right: 300px;
 }
+
+.review{
+    text-align: center;
+}
+
+.reviewForm{
+    background-color: peachpuff;
+}
+

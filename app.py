@@ -30,6 +30,7 @@ from models import (
     Favorites,
     Recommendations,
     Review,
+    ReviewForm,
 )
 from penguin import (
     book_suggestions,
@@ -550,7 +551,12 @@ def delete_recommendations():
 @login_required
 def get_book_info():
     """Displays even more specific info about a book in a separate "bookpage" page based on the provided ISBN."""
+    review_form = ReviewForm()
+    return_home_button = ReturnHomeButton()
     book_isbn = flask.request.args.get("isbn")
+    if book_isbn is None:
+        book_isbn = review_form.isbn.data
+    isbn_str = str(book_isbn)
     (
         author,
         flapcopy,
@@ -561,22 +567,22 @@ def get_book_info():
         book_cover,
         book_title,
     ) = all_book_info(book_isbn)
-    review = Review.query.filter_by(isbn=book_isbn).all()
+    review = Review.query.filter_by(isbn=isbn_str).all()
     num_review = len(review)
     if num_review == 0:
-        flask.flash("Be the first to add a comment for this movie")
-    if flask.request.method == "POST":
-        data = flask.request.form
+        flask.flash("Be the first to add a comment for this book")
+    if review_form.validate_on_submit():
         try:
+            isbn_str = str(review_form.isbn.data)
             new_review = Review(
                 username=current_user.username,
-                isbn=book_isbn,
-                comment=data["comment"],
-                rating=data["rating"],
+                isbn=isbn_str,
+                comment=review_form.comment.data,
+                rating=review_form.rating.data,
             )
             db.session.add(new_review)
             db.session.commit()
-            new_review = Review.query.filter_by(isbn=book_isbn).all()
+            new_review = Review.query.filter_by(isbn=isbn_str).all()
             new_num_review = len(new_review)
             return flask.render_template(
                 "bookpage.html",
@@ -590,6 +596,8 @@ def get_book_info():
                 book_title=book_title,
                 review=new_review,
                 num_review=new_num_review,
+                review_form=review_form,
+                return_home_button=return_home_button,
             )
         except ValueError:
             flask.flash("Something went wrong")
@@ -603,6 +611,8 @@ def get_book_info():
                 book_theme=book_theme,
                 book_cover=book_cover,
                 book_title=book_title,
+                review_form=review_form,
+                return_home_button=return_home_button,
             )
     return flask.render_template(
         "bookpage.html",
@@ -616,6 +626,8 @@ def get_book_info():
         book_title=book_title,
         review=review,
         num_review=num_review,
+        review_form=review_form,
+        return_home_button=return_home_button,
     )
 
 

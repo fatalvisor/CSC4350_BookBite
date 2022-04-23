@@ -1,7 +1,7 @@
 # Note: Be sure to install wtforms, flask_wtf, and wtforms.validators onto your system.
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
-from wtforms import StringField, SubmitField, PasswordField, SelectField
+from wtforms import StringField, SubmitField, PasswordField, SelectField, RadioField
 from flask_wtf import FlaskForm
 from wtforms.validators import InputRequired, Length, ValidationError, Optional
 
@@ -161,6 +161,22 @@ class BookTitleForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class ReviewForm(FlaskForm):
+    """Fields required for a review form"""
+
+    isbn = StringField(
+        validators=[Length(min=1, max=15)], render_kw={"readonly": True},
+    )
+    comment = StringField(
+        validators=[Length(min=1, max=200), Optional()],
+        render_kw={"placeholder": "Add a comment"},
+    )
+    rating = RadioField(
+        "Rating", choices=[("1", "1"), ("2", "2"), ("3", "3"), ("4", "4"), ("5", "5")],
+    )
+    submit = SubmitField("Submit")
+
+
 # =====================================================================
 # SECTION 3: FORMS WITH SINGLE-PURPOSE BUTTONS
 # =====================================================================
@@ -216,7 +232,7 @@ class Review(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False)
-    isbn = db.Column(db.String(15), nullable=False)
+    isbn = db.Column(db.String(20), nullable=False)
     comment = db.Column(db.String(200), nullable=False)
     rating = db.Column(db.String(15), nullable=False)
 
